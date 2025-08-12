@@ -44,8 +44,6 @@ return {
         show_source = true,
         jump_num_shortcut = true,
         max_width = 0.7,
-        custom_fix = nil,
-        custom_msg = nil,
         text_hl_follow = false,
         border_follow = true,
         keys = {
@@ -62,13 +60,11 @@ return {
       },
       outline = {
         win_position = 'right',
-        win_with = '',
         win_width = 30,
         show_detail = true,
         auto_preview = true,
         auto_refresh = true,
         auto_close = true,
-        custom_sort = nil,
         keys = {
           jump = 'o',
           expand_collapse = 'u',
@@ -90,50 +86,34 @@ return {
       },
     })
 
-    -- Keymaps for lspsaga with which-key integration
+    -- LSP Saga keymaps (these take priority over base LSP)
     local keymap = vim.keymap.set
 
-    -- LSP finder - find the symbol's definition, references, implementation, type definition
+    -- Core LSP functionality through Saga
     keymap('n', 'gh', '<cmd>Lspsaga finder<CR>', { desc = 'LSP: Find symbol (def/ref/impl)' })
-
-    -- Code action
     keymap({ 'n', 'v' }, '<leader>ca', '<cmd>Lspsaga code_action<CR>', { desc = 'LSP: Code actions' })
-
-    -- Rename all occurrences of the hovered word for the entire file
     keymap('n', 'gr', '<cmd>Lspsaga rename<CR>', { desc = 'LSP: Rename symbol' })
-
-    -- Rename for selected mode (project-wide)
     keymap('n', 'gR', '<cmd>Lspsaga rename ++project<CR>', { desc = 'LSP: Rename symbol (project)' })
-
-    -- Peek definition
+    
+    -- Definition and type definition
     keymap('n', 'gd', '<cmd>Lspsaga peek_definition<CR>', { desc = 'LSP: Peek definition' })
-
-    -- Go to definition
     keymap('n', 'gD', '<cmd>Lspsaga goto_definition<CR>', { desc = 'LSP: Goto definition' })
-
-    -- Peek type definition
     keymap('n', 'gt', '<cmd>Lspsaga peek_type_definition<CR>', { desc = 'LSP: Peek type definition' })
-
-    -- Go to type definition
     keymap('n', 'gT', '<cmd>Lspsaga goto_type_definition<CR>', { desc = 'LSP: Goto type definition' })
 
-    -- Show line diagnostics
+    -- Hover documentation
+    keymap('n', 'K', '<cmd>Lspsaga hover_doc<CR>', { desc = 'LSP: Hover documentation' })
+    keymap('n', '<leader>K', '<cmd>Lspsaga hover_doc ++keep<CR>', { desc = 'LSP: Pin hover documentation' })
+
+    -- Diagnostics
     keymap('n', '<leader>sl', '<cmd>Lspsaga show_line_diagnostics<CR>', { desc = 'LSP: Show line diagnostics' })
-
-    -- Show buffer diagnostics
     keymap('n', '<leader>sb', '<cmd>Lspsaga show_buf_diagnostics<CR>', { desc = 'LSP: Show buffer diagnostics' })
-
-    -- Show workspace diagnostics
     keymap('n', '<leader>sw', '<cmd>Lspsaga show_workspace_diagnostics<CR>', { desc = 'LSP: Show workspace diagnostics' })
-
-    -- Show cursor diagnostics
     keymap('n', '<leader>sc', '<cmd>Lspsaga show_cursor_diagnostics<CR>', { desc = 'LSP: Show cursor diagnostics' })
 
-    -- Diagnostic jump
+    -- Diagnostic navigation
     keymap('n', '[e', '<cmd>Lspsaga diagnostic_jump_prev<CR>', { desc = 'LSP: Previous diagnostic' })
     keymap('n', ']e', '<cmd>Lspsaga diagnostic_jump_next<CR>', { desc = 'LSP: Next diagnostic' })
-
-    -- Diagnostic jump with filters such as only jumping to an error
     keymap('n', '[E', function()
       require('lspsaga.diagnostic'):goto_prev({ severity = vim.diagnostic.severity.ERROR })
     end, { desc = 'LSP: Previous error' })
@@ -141,23 +121,17 @@ return {
       require('lspsaga.diagnostic'):goto_next({ severity = vim.diagnostic.severity.ERROR })
     end, { desc = 'LSP: Next error' })
 
-    -- Toggle outline
-    keymap('n', '<leader>o', '<cmd>Lspsaga outline<CR>', { desc = 'LSP: Toggle outline' })
-
-    -- Hover Doc
-    keymap('n', 'K', '<cmd>Lspsaga hover_doc<CR>', { desc = 'LSP: Hover documentation' })
-
-    -- If you want to keep the hover window pinned, you can add the ++keep argument
-    keymap('n', '<leader>K', '<cmd>Lspsaga hover_doc ++keep<CR>', { desc = 'LSP: Pin hover documentation' })
-
     -- Call hierarchy
     keymap('n', '<Leader>ci', '<cmd>Lspsaga incoming_calls<CR>', { desc = 'LSP: Incoming calls' })
     keymap('n', '<Leader>co', '<cmd>Lspsaga outgoing_calls<CR>', { desc = 'LSP: Outgoing calls' })
 
-    -- Floating terminal
+    -- Outline
+    keymap('n', '<leader>o', '<cmd>Lspsaga outline<CR>', { desc = 'LSP: Toggle outline' })
+
+    -- Terminal
     keymap({ 'n', 't' }, '<A-d>', '<cmd>Lspsaga term_toggle<CR>', { desc = 'Toggle floating terminal' })
 
-    -- Which-key group registrations for better organization
+    -- Which-key integration
     local ok, wk = pcall(require, 'which-key')
     if ok then
       wk.add({
@@ -190,8 +164,8 @@ return {
     end
   end,
   dependencies = {
-    'nvim-treesitter/nvim-treesitter', -- optional
-    'nvim-tree/nvim-web-devicons', -- optional
-    'folke/which-key.nvim', -- for better keymap descriptions
+    'nvim-treesitter/nvim-treesitter',
+    'nvim-tree/nvim-web-devicons',
+    'folke/which-key.nvim',
   },
 } 
