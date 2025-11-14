@@ -91,7 +91,7 @@ return {
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
         'delve', -- Go debugger
-        -- 'codelldb', -- Rust/C++ debugger
+        'codelldb', -- C/C++/Rust debugger
         -- 'python', -- Python debugger
       },
     }
@@ -133,6 +133,37 @@ return {
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
+
+    -- C/C++ configurations (using codelldb)
+    local function get_default_executable()
+      local cwd = vim.fn.getcwd()
+      local basename = vim.fn.fnamemodify(vim.fn.bufname '%', ':t:r')
+      local candidate = cwd .. '/build/' .. basename
+      if vim.fn.filereadable(candidate) == 1 and vim.fn.executable(candidate) == 1 then
+        return candidate
+      end
+      return vim.fn.input('Path to executable: ', cwd .. '/', 'file')
+    end
+
+    dap.configurations.cpp = {
+      {
+        name = 'Launch',
+        type = 'codelldb',
+        request = 'launch',
+        program = get_default_executable,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+        args = {},
+      },
+      {
+        name = 'Attach to process',
+        type = 'codelldb',
+        request = 'attach',
+        pid = require('dap.utils').pick_process,
+        cwd = '${workspaceFolder}',
+      },
+    }
+    dap.configurations.c = dap.configurations.cpp
 
     -- Install golang specific config
     require('dap-go').setup {

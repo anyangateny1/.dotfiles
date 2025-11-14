@@ -89,21 +89,23 @@ return {
     -- LSP Saga keymaps (these take priority over base LSP)
     local keymap = vim.keymap.set
 
-    -- Core LSP functionality through Saga
+    -- Core LSP functionality (standard motions)
     keymap('n', 'gh', '<cmd>Lspsaga finder<CR>', { desc = 'LSP: Find symbol (def/ref/impl)' })
     keymap({ 'n', 'v' }, '<leader>ca', '<cmd>Lspsaga code_action<CR>', { desc = 'LSP: Code actions' })
-    keymap('n', 'gr', '<cmd>Lspsaga rename<CR>', { desc = 'LSP: Rename symbol' })
-    keymap('n', 'gR', '<cmd>Lspsaga rename ++project<CR>', { desc = 'LSP: Rename symbol (project)' })
+    keymap('n', '<leader>rn', '<cmd>Lspsaga rename<CR>', { desc = 'LSP: Rename symbol' })
     
     -- Definition and type definition
-    keymap('n', 'gd', '<cmd>Lspsaga peek_definition<CR>', { desc = 'LSP: Peek definition' })
-    keymap('n', 'gD', '<cmd>Lspsaga goto_definition<CR>', { desc = 'LSP: Goto definition' })
-    keymap('n', 'gt', '<cmd>Lspsaga peek_type_definition<CR>', { desc = 'LSP: Peek type definition' })
-    keymap('n', 'gT', '<cmd>Lspsaga goto_type_definition<CR>', { desc = 'LSP: Goto type definition' })
+    keymap('n', 'gd', '<cmd>Lspsaga goto_definition<CR>', { desc = 'LSP: Goto definition' })
+    keymap('n', 'gD', vim.lsp.buf.declaration, { desc = 'LSP: Goto declaration' })
+    keymap('n', '<leader>D', vim.lsp.buf.type_definition, { desc = 'LSP: Type definition' })
 
     -- Hover documentation
     keymap('n', 'K', '<cmd>Lspsaga hover_doc<CR>', { desc = 'LSP: Hover documentation' })
     keymap('n', '<leader>K', '<cmd>Lspsaga hover_doc ++keep<CR>', { desc = 'LSP: Pin hover documentation' })
+
+    -- References and implementations
+    keymap('n', 'gr', vim.lsp.buf.references, { desc = 'LSP: References' })
+    keymap('n', 'gI', vim.lsp.buf.implementation, { desc = 'LSP: Goto implementation' })
 
     -- Diagnostics
     keymap('n', '<leader>sl', '<cmd>Lspsaga show_line_diagnostics<CR>', { desc = 'LSP: Show line diagnostics' })
