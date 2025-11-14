@@ -53,8 +53,7 @@ return {
       -- Leader key groups
       { "<leader>c", group = "[C]ode" },
       { "<leader>ca", desc = "Code [A]ctions" },
-      { "<leader>ch", desc = "Go to [H]eader declaration" },
-      { "<leader>ct", desc = "Go to [T]ype definition" },
+      { "<leader>ch", desc = "Switch [H]eader/Source (clangd)" },
       { "<leader>cI", desc = "Show [I]nclude hierarchy" },
       { "<leader>cf", desc = "[C]onform [F]ormat - Debug formatter" },
       
@@ -99,6 +98,8 @@ return {
       { "gr", desc = "[G]oto [R]eferences" },
       { "gI", desc = "[G]oto [I]mplementation" },
       { "gD", desc = "[G]oto [D]eclaration" },
+      { "<leader>D", desc = "Type [D]efinition" },
+      { "<leader>rn", desc = "[R]e[n]ame symbol" },
       
       -- Hover documentation
       { "K", desc = "Hover Documentation" },
