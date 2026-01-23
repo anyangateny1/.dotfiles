@@ -52,11 +52,25 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = { '*.cpp', '*.h', '*.hpp', '*.c', '*.cc', '*.cxx' },
   callback = function()
     -- Save cursor position
-    local save_cursor = vim.fn.getpos('.')
+    local save_cursor = vim.fn.getpos '.'
     -- Remove trailing whitespace
-    vim.cmd([[%s/\s\+$//e]])
+    vim.cmd [[%s/\s\+$//e]]
     -- Restore cursor position
     vim.fn.setpos('.', save_cursor)
   end,
   desc = 'Remove trailing whitespace from C++ files before save',
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'c', 'cpp' },
+  callback = function()
+    vim.opt_local.cindent = true
+    vim.opt_local.smartindent = false
+    vim.opt_local.autoindent = true
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 4
+    vim.opt_local.softtabstop = 4
+  end,
+  desc = 'Enable C-style indentation for C/C++ files',
 })
