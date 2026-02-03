@@ -92,17 +92,9 @@ return {
       { "<leader>/", desc = "Fuzzily search in current buffer" },
       { "<leader><leader>", desc = "Find existing buffers" },
       
-      -- LSP navigation (using defaults from Neovim 0.11.3)
-      { "g", group = "[G]oto" },
-      { "gd", desc = "[G]oto [D]efinition" },
-      { "gr", desc = "[G]oto [R]eferences" },
-      { "gI", desc = "[G]oto [I]mplementation" },
-      { "gD", desc = "[G]oto [D]eclaration" },
-      { "<leader>D", desc = "Type [D]efinition" },
-      { "<leader>rn", desc = "[R]e[n]ame symbol" },
-      
       -- Hover documentation
       { "K", desc = "Hover Documentation" },
+      { "gI", desc = "[G]oto [I]mplementation" },
       
       -- Completion mappings (insert mode)
       { "<C-n>", desc = "Next completion item", mode = "i" },

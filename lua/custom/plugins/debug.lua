@@ -121,8 +121,7 @@ return {
     -- Change breakpoint icons
     vim.api.nvim_set_hl(0, 'DapBreak', { fg = '#e51400' })
     vim.api.nvim_set_hl(0, 'DapStop', { fg = '#ffcc00' })
-    local breakpoint_icons = vim.g.have_nerd_font
-        and { Breakpoint = '', BreakpointCondition = '', BreakpointRejected = '', LogPoint = '', Stopped = '' }
+    local breakpoint_icons = vim.g.have_nerd_font and { Breakpoint = '', BreakpointCondition = '', BreakpointRejected = '', LogPoint = '', Stopped = '' }
       or { Breakpoint = '●', BreakpointCondition = '⊜', BreakpointRejected = '⊘', LogPoint = '◆', Stopped = '⭔' }
     for type, icon in pairs(breakpoint_icons) do
       local tp = 'Dap' .. type
@@ -165,6 +164,8 @@ return {
     }
     dap.configurations.c = dap.configurations.cpp
 
+    require('dap.ext.vscode').load_launchjs(nil, { codelldb = { 'c', 'cpp' } })
+
     -- Install golang specific config
     require('dap-go').setup {
       delve = {
@@ -174,4 +175,5 @@ return {
       },
     }
   end,
-} 
+}
+

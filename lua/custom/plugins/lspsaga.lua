@@ -97,6 +97,8 @@ return {
     -- Definition and type definition
     keymap('n', 'gd', '<cmd>Lspsaga goto_definition<CR>', { desc = 'LSP: Goto definition' })
     keymap('n', 'gD', vim.lsp.buf.declaration, { desc = 'LSP: Goto declaration' })
+    keymap('n', 'gt', '<cmd>Lspsaga peek_type_definition<CR>', { desc = 'LSP: Peek type definition' })
+    keymap('n', 'gT', '<cmd>Lspsaga goto_type_definition<CR>', { desc = 'LSP: Goto type definition' })
     keymap('n', '<leader>D', vim.lsp.buf.type_definition, { desc = 'LSP: Type definition' })
 
     -- Hover documentation
@@ -110,7 +112,7 @@ return {
     -- Diagnostics
     keymap('n', '<leader>sl', '<cmd>Lspsaga show_line_diagnostics<CR>', { desc = 'LSP: Show line diagnostics' })
     keymap('n', '<leader>sb', '<cmd>Lspsaga show_buf_diagnostics<CR>', { desc = 'LSP: Show buffer diagnostics' })
-    keymap('n', '<leader>sw', '<cmd>Lspsaga show_workspace_diagnostics<CR>', { desc = 'LSP: Show workspace diagnostics' })
+    keymap('n', '<leader>sW', '<cmd>Lspsaga show_workspace_diagnostics<CR>', { desc = 'LSP: Show workspace diagnostics' })
     keymap('n', '<leader>sc', '<cmd>Lspsaga show_cursor_diagnostics<CR>', { desc = 'LSP: Show cursor diagnostics' })
 
     -- Diagnostic navigation
@@ -144,18 +146,18 @@ return {
         { "<leader>s", group = "[S]how/Search" },
         { "<leader>sl", desc = "[L]ine diagnostics" },
         { "<leader>sb", desc = "[B]uffer diagnostics" },
-        { "<leader>sw", desc = "[W]orkspace diagnostics" },
+        { "<leader>sW", desc = "[W]orkspace diagnostics" },
         { "<leader>sc", desc = "[C]ursor diagnostics" },
         { "<leader>o", desc = "Toggle [O]utline" },
         { "<leader>K", desc = "Pin hover documentation" },
         { "g", group = "[G]oto" },
         { "gh", desc = "LSP finder" },
-        { "gd", desc = "Peek [D]efinition" },
-        { "gD", desc = "Goto [D]efinition" },
+        { "gd", desc = "Goto [D]efinition" },
+        { "gD", desc = "Goto [D]eclaration" },
         { "gt", desc = "Peek [T]ype definition" },
         { "gT", desc = "Goto [T]ype definition" },
-        { "gr", desc = "[R]ename symbol" },
-        { "gR", desc = "[R]ename symbol (project)" },
+        { "gr", desc = "[R]eferences" },
+        { "gR", desc = "[R]eferences (Trouble)" },
         { "[", group = "Previous" },
         { "[e", desc = "Previous diagnostic" },
         { "[E", desc = "Previous error" },
