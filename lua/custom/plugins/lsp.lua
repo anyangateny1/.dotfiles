@@ -191,58 +191,75 @@ return {
         return base_flags
       end
 
-      local servers = {
-        lua_ls = {
-          settings = {
-            Lua = {
-              completion = {
-                callSnippet = 'Replace',
-              },
+      -- Configure lua_ls using new vim.lsp.config API (Neovim 0.11+)
+      vim.lsp.config('lua_ls', {
+        cmd = { 'lua-language-server' },
+        filetypes = { 'lua' },
+        root_markers = { '.luarc.json', '.luarc.jsonc', '.stylua.toml', 'stylua.toml', '.git' },
+        capabilities = capabilities,
+        settings = {
+          Lua = {
+            completion = {
+              callSnippet = 'Replace',
             },
           },
         },
-        clangd = {
-          cmd = { 
-            'clangd', 
-            '--compile-commands-dir=build',
-            '--header-insertion=iwyu',
-            '--completion-style=detailed',
-            '--function-arg-placeholders',
-            '--fallback-style=llvm',
-            '--clang-tidy',
-            '--all-scopes-completion',
-            '--cross-file-rename',
-            '--log=info',
-            '--background-index',
-            '--pch-storage=memory',
-            '--enable-config',
-            '--header-insertion-decorators',
-            '--suggest-missing-includes',
-            '--query-driver=/usr/bin/g++,/usr/bin/gcc,/usr/bin/clang++,/usr/bin/clang',
-          },
-          filetypes = { 'c', 'cpp' },
-          init_options = {
-            usePlaceholders = true,
-            completeUnimported = true,
-            clangdFileStatus = true,
-          },
-          on_new_config = function(new_config, new_root_dir)
-            local filetype = vim.bo.filetype
-            new_config.init_options.fallbackFlags = get_fallback_flags(filetype)
-          end,
-          on_attach = function(client, bufnr)
-            -- Set environment variables
-            vim.env.C_INCLUDE_PATH = '/usr/include:/usr/local/include:/usr/include/x86_64-linux-gnu'
-            vim.env.CPLUS_INCLUDE_PATH = '/usr/include/c++/13:/usr/include/x86_64-linux-gnu/c++/13:/usr/include/c++/13/backward:/usr/include:/usr/include/x86_64-linux-gnu'
-            vim.env.LD_LIBRARY_PATH = '/usr/lib/x86_64-linux-gnu:/usr/local/lib'
-          end,
-        },
-      }
+      })
 
-      for server_name, server_config in pairs(servers) do
-        server_config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server_config.capabilities or {})
-        require('lspconfig')[server_name].setup(server_config)
-      end
+      -- Configure clangd using new vim.lsp.config API (Neovim 0.11+)
+      vim.lsp.config('clangd', {
+        cmd = { 
+          'clangd', 
+          '--compile-commands-dir=build',
+          '--header-insertion=iwyu',
+          '--completion-style=detailed',
+          '--function-arg-placeholders',
+          '--fallback-style=llvm',
+          '--clang-tidy',
+          '--all-scopes-completion',
+          '--cross-file-rename',
+          '--log=info',
+          '--background-index',
+          '--pch-storage=memory',
+          '--enable-config',
+          '--header-insertion-decorators',
+          '--suggest-missing-includes',
+          '--query-driver=/usr/bin/g++,/usr/bin/gcc,/usr/bin/clang++,/usr/bin/clang',
+        },
+        filetypes = { 'c', 'cpp' },
+        root_markers = {
+          '.clangd',
+          '.clang-tidy',
+          '.clang-format',
+          'compile_commands.json',
+          'compile_flags.txt',
+          '.git',
+        },
+        capabilities = vim.tbl_deep_extend('force', {}, capabilities, {
+          textDocument = {
+            completion = {
+              editsNearCursor = true,
+            },
+          },
+          offsetEncoding = { 'utf-8', 'utf-16' },
+        }),
+        init_options = {
+          usePlaceholders = true,
+          completeUnimported = true,
+          clangdFileStatus = true,
+          fallbackFlags = get_fallback_flags('cpp'),
+        },
+        on_attach = function(client, bufnr)
+          -- Set environment variables
+          vim.env.C_INCLUDE_PATH = '/usr/include:/usr/local/include:/usr/include/x86_64-linux-gnu'
+          vim.env.CPLUS_INCLUDE_PATH = '/usr/include/c++/13:/usr/include/x86_64-linux-gnu/c++/13:/usr/include/c++/13/backward:/usr/include:/usr/include/x86_64-linux-gnu'
+          vim.env.LD_LIBRARY_PATH = '/usr/lib/x86_64-linux-gnu:/usr/local/lib'
+        end,
+      })
+
+      -- Enable the configured LSP servers
+      vim.lsp.enable('lua_ls')
+      vim.lsp.enable('clangd')
 
       require('mason-tool-installer').setup {
         ensure_installed = { 'lua_ls', 'clangd', 'stylua', 'clang-format' },
