@@ -135,41 +135,9 @@ return {
     -- Terminal
     keymap({ 'n', 't' }, '<A-d>', '<cmd>Lspsaga term_toggle<CR>', { desc = 'Toggle floating terminal' })
 
-    -- Which-key integration
-    local ok, wk = pcall(require, 'which-key')
-    if ok then
-      wk.add({
-        { "<leader>c", group = "[C]ode" },
-        { "<leader>ca", desc = "Code [A]ctions" },
-        { "<leader>ci", desc = "[I]ncoming calls" },
-        { "<leader>co", desc = "[O]utgoing calls" },
-        { "<leader>s", group = "[S]how/Search" },
-        { "<leader>sl", desc = "[L]ine diagnostics" },
-        { "<leader>sb", desc = "[B]uffer diagnostics" },
-        { "<leader>sW", desc = "[W]orkspace diagnostics" },
-        { "<leader>sc", desc = "[C]ursor diagnostics" },
-        { "<leader>o", desc = "Toggle [O]utline" },
-        { "<leader>K", desc = "Pin hover documentation" },
-        { "g", group = "[G]oto" },
-        { "gh", desc = "LSP finder" },
-        { "gd", desc = "Goto [D]efinition" },
-        { "gD", desc = "Goto [D]eclaration" },
-        { "gt", desc = "Peek [T]ype definition" },
-        { "gT", desc = "Goto [T]ype definition" },
-        { "gr", desc = "[R]eferences" },
-        { "gR", desc = "[R]eferences (Trouble)" },
-        { "[", group = "Previous" },
-        { "[e", desc = "Previous diagnostic" },
-        { "[E", desc = "Previous error" },
-        { "]", group = "Next" },
-        { "]e", desc = "Next diagnostic" },
-        { "]E", desc = "Next error" },
-      })
-    end
   end,
   dependencies = {
     'nvim-treesitter/nvim-treesitter',
     'nvim-tree/nvim-web-devicons',
-    'folke/which-key.nvim',
   },
 } 
