@@ -1,4 +1,4 @@
--- Install lazy.nvim
+-- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
@@ -9,7 +9,6 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Plugin configuration
 require('lazy').setup({
   { import = 'custom.plugins' },
 }, {
@@ -31,6 +30,3 @@ require('lazy').setup({
     },
   },
 })
-
--- Load clang-format debug utility for WSL troubleshooting
--- require('custom.clang-format-debug') 
