@@ -10,30 +10,27 @@ return {
     },
 
     modes = {
-      workspace_diagnostics = {
+      doc_diagnostics = {
+        mode = 'diagnostics',
+        filter = { buf = 0 },
         preview = { type = 'float', relative = 'editor' },
         win = { position = 'bottom', size = 10 },
-        group = true,
       },
-      document_diagnostics = {
+      diagnostics = {
         preview = { type = 'float', relative = 'editor' },
         win = { position = 'bottom', size = 10 },
-        group = true,
       },
-      quickfix = {
+      qflist = {
         preview = { type = 'float', relative = 'editor' },
         win = { position = 'bottom', size = 10 },
-        group = true,
       },
       loclist = {
         preview = { type = 'float', relative = 'editor' },
         win = { position = 'bottom', size = 10 },
-        group = true,
       },
       lsp_references = {
         preview = { type = 'float', relative = 'editor' },
         win = { position = 'bottom', size = 10 },
-        group = true,
         auto_jump = true,
       },
     },
@@ -43,32 +40,32 @@ return {
     require('trouble').setup(opts)
 
     vim.keymap.set('n', '<leader>xx', function()
-      require('trouble').toggle()
+      require('trouble').toggle('diagnostics')
     end, { desc = 'Toggle Trouble' })
 
     vim.keymap.set('n', '<leader>xw', function()
-      require('trouble').toggle 'workspace_diagnostics'
+      require('trouble').toggle('diagnostics')
     end, { desc = 'Workspace Diagnostics' })
 
     vim.keymap.set('n', '<leader>xd', function()
-      require('trouble').toggle 'document_diagnostics'
+      require('trouble').toggle('doc_diagnostics')
     end, { desc = 'Document Diagnostics' })
 
     vim.keymap.set('n', '<leader>xq', function()
-      require('trouble').toggle 'quickfix'
+      require('trouble').toggle('qflist')
     end, { desc = 'Quickfix List' })
 
     vim.keymap.set('n', '<leader>xl', function()
-      require('trouble').toggle 'loclist'
+      require('trouble').toggle('loclist')
     end, { desc = 'Location List' })
 
     vim.keymap.set('n', 'gR', function()
-      require('trouble').toggle 'lsp_references'
+      require('trouble').toggle('lsp_references')
     end, { desc = 'LSP References' })
 
     vim.keymap.set('n', '[t', function()
       if require('trouble').is_open() then
-        require('trouble').previous { skip_groups = true, jump = true }
+        require('trouble').prev({ jump = true })
       else
         pcall(vim.cmd.cprev)
       end
@@ -76,7 +73,7 @@ return {
 
     vim.keymap.set('n', ']t', function()
       if require('trouble').is_open() then
-        require('trouble').next { skip_groups = true, jump = true }
+        require('trouble').next({ jump = true })
       else
         pcall(vim.cmd.cnext)
       end

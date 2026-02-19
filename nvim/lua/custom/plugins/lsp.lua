@@ -55,18 +55,26 @@ return {
               end
               -- Fallback heuristic if clangd is unavailable
               local fname = vim.api.nvim_buf_get_name(bufnr)
-              local stem, ext = fname:match('^(.*)%.([%w]+)$')
-              if not stem then return end
+              local stem, ext = fname:match '^(.*)%.([%w]+)$'
+              if not stem then
+                return
+              end
               local src_exts = { 'c', 'cc', 'cpp', 'cxx' }
               local hdr_exts = { 'h', 'hh', 'hpp', 'hxx' }
               local function contains(t, v)
-                for _, x in ipairs(t) do if x == v then return true end end
+                for _, x in ipairs(t) do
+                  if x == v then
+                    return true
+                  end
+                end
                 return false
               end
               local function first_existing(candidates)
                 for _, e in ipairs(candidates) do
                   local p = stem .. '.' .. e
-                  if (vim.uv or vim.loop).fs_stat(p) then return p end
+                  if (vim.uv or vim.loop).fs_stat(p) then
+                    return p
+                  end
                 end
               end
               local target
@@ -83,7 +91,7 @@ return {
             end
             map('<leader>ch', switch_source_header, '[C]langd Switch header/source')
             map('<leader>cI', function()
-              vim.cmd('Telescope lsp_incoming_calls')
+              vim.cmd 'Telescope lsp_incoming_calls'
             end, '[C]langd [I]nclude hierarchy')
           end
 
@@ -131,10 +139,8 @@ return {
             [vim.diagnostic.severity.HINT] = '󰌶 ',
           },
         } or {},
-        virtual_text = {
-          source = 'if_many',
-          spacing = 2,
-        },
+        virtual_text = false,
+        virtual_lines = true,
       }
 
       -- Capabilities (shared by all servers)
@@ -153,7 +159,9 @@ return {
         if handle then
           while true do
             local name, type = vim.uv.fs_scandir_next(handle)
-            if not name then break end
+            if not name then
+              break
+            end
             if type == 'directory' then
               table.insert(candidates, gcc_base .. '/' .. name)
               local arch_dir = '/usr/include/' .. (vim.uv.os_uname().machine or 'x86_64') .. '-linux-gnu/c++/' .. name
@@ -249,9 +257,11 @@ return {
             usePlaceholders = true,
             completeUnimported = true,
             clangdFileStatus = true,
-            fallbackFlags = get_fallback_flags('cpp'),
+            fallbackFlags = get_fallback_flags 'cpp',
           },
         },
+
+        gopls = {},
 
         -- To add a new server, just add an entry here.
         -- Use `mason = 'pkg-name'` if the Mason name differs from the lspconfig name.
