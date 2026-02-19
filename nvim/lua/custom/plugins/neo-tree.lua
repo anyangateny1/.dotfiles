@@ -10,6 +10,18 @@ return {
     'MunifTanjim/nui.nvim',
   },
   cmd = 'Neotree',
+  init = function()
+    vim.api.nvim_create_autocmd('BufEnter', {
+      group = vim.api.nvim_create_augroup('NeoTreeInit', { clear = true }),
+      callback = function()
+        local f = vim.fn.expand('%:p')
+        if vim.fn.isdirectory(f) == 1 then
+          vim.cmd('Neotree current dir=' .. vim.fn.fnameescape(f))
+          return true
+        end
+      end,
+    })
+  end,
   keys = {
     { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
     { '<leader>e', ':Neotree toggle<CR>', desc = 'Toggle NeoTree', silent = true },
@@ -149,7 +161,7 @@ return {
         leave_dirs_open = false, -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
       },
       group_empty_dirs = false, -- when true, empty folders will be grouped together
-      hijack_netrw_behavior = "open_default", -- netrw disabled, opening a directory opens neo-tree
+      hijack_netrw_behavior = "open_current",
       use_libuv_file_watcher = false, -- This will use the OS level file watchers to detect changes
       window = {
         mappings = {
