@@ -41,11 +41,7 @@ return {
 
     vim.keymap.set('n', '<leader>xx', function()
       require('trouble').toggle('diagnostics')
-    end, { desc = 'Toggle Trouble' })
-
-    vim.keymap.set('n', '<leader>xw', function()
-      require('trouble').toggle('diagnostics')
-    end, { desc = 'Workspace Diagnostics' })
+    end, { desc = 'Toggle Trouble (all diagnostics)' })
 
     vim.keymap.set('n', '<leader>xd', function()
       require('trouble').toggle('doc_diagnostics')

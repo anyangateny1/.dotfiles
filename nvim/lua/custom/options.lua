@@ -26,6 +26,14 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 vim.opt.confirm = true
+vim.opt.termguicolors = true
+vim.opt.wrap = false
+vim.opt.swapfile = false
+vim.opt.smartindent = true
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
+vim.opt.expandtab = true
 
 -- Defer clipboard to avoid startup slowdown
 vim.schedule(function()
