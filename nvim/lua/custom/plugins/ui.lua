@@ -1,12 +1,12 @@
 return {
   -- Highlight todo, notes in comments
-  { 
-    'folke/todo-comments.nvim', 
-    event = 'VimEnter', 
-    dependencies = { 'nvim-lua/plenary.nvim' }, 
-    opts = { signs = false } 
+  {
+    'folke/todo-comments.nvim',
+    event = 'VimEnter',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = { signs = false },
   },
-  
+
   -- Mini plugins collection
   {
     'echasnovski/mini.nvim',
@@ -20,7 +20,7 @@ return {
       end
     end,
   },
-  
+
   -- Treesitter for syntax highlighting
   {
     'nvim-treesitter/nvim-treesitter',
@@ -28,13 +28,31 @@ return {
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
-    main = 'nvim-treesitter.configs',
+    main = 'nvim-treesitter.config',
     opts = {
       ensure_installed = {
-        'bash', 'c', 'cpp', 'diff', 'html', 'lua', 'luadoc',
-        'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc',
-        'go', 'gomod', 'gosum', 'json', 'yaml', 'toml', 'python',
-        'javascript', 'typescript', 'css',
+        'bash',
+        'c',
+        'cpp',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+        'go',
+        'gomod',
+        'gosum',
+        'json',
+        'yaml',
+        'toml',
+        'python',
+        'javascript',
+        'typescript',
+        'css',
       },
       auto_install = true,
       highlight = {
@@ -87,4 +105,5 @@ return {
       },
     },
   },
-} 
+}
+
