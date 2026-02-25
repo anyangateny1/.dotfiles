@@ -41,6 +41,7 @@ return {
     spec = {
       { '<leader>c', group = '[C]ode' },
       { '<leader>d', group = '[D]ocument' },
+      { '<leader>l', group = '[L]SP Diagnostics' },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       { '<leader>r', group = '[R]ename' },
       { '<leader>s', group = '[S]earch' },

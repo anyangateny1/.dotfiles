@@ -1,5 +1,5 @@
 return {
-  -- Lua development support
+  -- LSP Configuration for Lua development
   {
     'folke/lazydev.nvim',
     ft = 'lua',
@@ -9,30 +9,33 @@ return {
       },
     },
   },
-
   -- Main LSP Configuration
   {
     'neovim/nvim-lspconfig',
     dependencies = {
       { 'williamboman/mason.nvim', opts = {} },
+      'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
       { 'j-hui/fidget.nvim', opts = {} },
       'hrsh7th/cmp-nvim-lsp',
     },
     config = function()
       vim.api.nvim_create_autocmd('LspAttach', {
-        group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
+        group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
           local map = function(keys, func, desc, mode)
             mode = mode or 'n'
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
-
-          -- Telescope-based LSP lookups (don't conflict with Lspsaga)
+          
+          -- Only set keymaps that DON'T conflict with LSP Saga
+          -- LSP Saga will handle: gd, gD, gr, gt, gT, K, <leader>ca
+          
+          -- These are safe to keep as they use telescope and don't conflict
           map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
           map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-
-          -- Clangd-specific keymaps
+          
+          -- Keep these specific clangd keymaps that LSP Saga doesn't override
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client.name == 'clangd' then
             local function switch_source_header()
@@ -55,17 +58,13 @@ return {
               end
               -- Fallback heuristic if clangd is unavailable
               local fname = vim.api.nvim_buf_get_name(bufnr)
-              local stem, ext = fname:match '^(.*)%.([%w]+)$'
-              if not stem then
-                return
-              end
+              local stem, ext = fname:match('^(.*)%.([%w]+)$')
+              if not stem then return end
               local src_exts = { 'c', 'cc', 'cpp', 'cxx' }
               local hdr_exts = { 'h', 'hh', 'hpp', 'hxx' }
               local function contains(t, v)
                 for _, x in ipairs(t) do
-                  if x == v then
-                    return true
-                  end
+                  if x == v then return true end
                 end
                 return false
               end
@@ -91,13 +90,20 @@ return {
             end
             map('<leader>ch', switch_source_header, '[C]langd Switch header/source')
             map('<leader>cI', function()
-              vim.cmd 'Telescope lsp_incoming_calls'
+              vim.cmd('Telescope lsp_incoming_calls')
             end, '[C]langd [I]nclude hierarchy')
           end
-
-          -- Document highlights
-          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, { bufnr = event.buf }) then
-            local highlight_augroup = vim.api.nvim_create_augroup('lsp-highlight', { clear = false })
+          
+          local function client_supports_method(client, method, bufnr)
+            if vim.fn.has 'nvim-0.10' == 1 then
+              return client.supports_method and client:supports_method(method, { bufnr = bufnr })
+            else
+              return client.server_capabilities and client.server_capabilities[method] ~= nil
+            end
+          end
+          
+          if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
+            local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
               group = highlight_augroup,
@@ -109,16 +115,15 @@ return {
               callback = vim.lsp.buf.clear_references,
             })
             vim.api.nvim_create_autocmd('LspDetach', {
-              group = vim.api.nvim_create_augroup('lsp-detach', { clear = true }),
+              group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
               callback = function(event2)
                 vim.lsp.buf.clear_references()
-                vim.api.nvim_clear_autocmds { group = 'lsp-highlight', buffer = event2.buf }
+                vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = event2.buf }
               end,
             })
           end
-
-          -- Inlay hints toggle
-          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint, { bufnr = event.buf }) then
+          
+          if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf }, { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
@@ -126,7 +131,6 @@ return {
         end,
       })
 
-      -- Diagnostics
       vim.diagnostic.config {
         severity_sort = true,
         float = { border = 'rounded', source = 'if_many' },
@@ -139,155 +143,115 @@ return {
             [vim.diagnostic.severity.HINT] = '󰌶 ',
           },
         } or {},
-        virtual_text = false,
-        virtual_lines = true,
+        virtual_text = {
+          source = 'if_many',
+          spacing = 2,
+        },
       }
 
-      -- Capabilities (shared by all servers)
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-      --- Detect C++ include paths dynamically for the current system.
-      local function get_system_include_paths()
-        local paths = {}
-        local candidates = {
-          '/usr/include',
-          '/usr/local/include',
-        }
-        local gcc_base = '/usr/include/c++'
-        local handle = vim.uv.fs_scandir(gcc_base)
-        if handle then
-          while true do
-            local name, type = vim.uv.fs_scandir_next(handle)
-            if not name then
-              break
-            end
-            if type == 'directory' then
-              table.insert(candidates, gcc_base .. '/' .. name)
-              local arch_dir = '/usr/include/' .. (vim.uv.os_uname().machine or 'x86_64') .. '-linux-gnu/c++/' .. name
-              if vim.uv.fs_stat(arch_dir) then
-                table.insert(candidates, arch_dir)
-              end
-              local backward = gcc_base .. '/' .. name .. '/backward'
-              if vim.uv.fs_stat(backward) then
-                table.insert(candidates, backward)
-              end
-            end
-          end
-        end
-        local machine = (vim.uv.os_uname().machine or 'x86_64') .. '-linux-gnu'
-        local arch_include = '/usr/include/' .. machine
-        if vim.uv.fs_stat(arch_include) then
-          table.insert(candidates, arch_include)
-        end
-        for _, path in ipairs(candidates) do
-          if vim.uv.fs_stat(path) then
-            table.insert(paths, '-I' .. path)
-          end
-        end
-        return paths
-      end
+      -- Apply cmp-nvim-lsp capabilities to all servers via wildcard
+      vim.lsp.config('*', {
+        capabilities = capabilities,
+      })
 
       local function get_fallback_flags(filetype)
-        local flags = get_system_include_paths()
-        table.insert(flags, '-D__STDC_CONSTANT_MACROS')
-        table.insert(flags, '-D__STDC_FORMAT_MACROS')
-        table.insert(flags, '-D__STDC_LIMIT_MACROS')
-        if filetype == 'c' then
-          table.insert(flags, '-std=gnu11')
-        elseif filetype == 'cpp' then
-          table.insert(flags, '-std=c++20')
+        local base_flags = {
+          '-D__STDC_CONSTANT_MACROS',
+          '-D__STDC_FORMAT_MACROS',
+          '-D__STDC_LIMIT_MACROS',
+        }
+
+        if vim.fn.has('mac') == 1 then
+          local sdk = vim.trim(vim.fn.system('xcrun --show-sdk-path 2>/dev/null'))
+          if sdk ~= '' then
+            table.insert(base_flags, '-isysroot')
+            table.insert(base_flags, sdk)
+          end
+          vim.list_extend(base_flags, {
+            '-I/usr/local/include',
+            '-I/opt/homebrew/include',
+          })
+        else
+          vim.list_extend(base_flags, {
+            '-I/usr/include/c++/13',
+            '-I/usr/include/x86_64-linux-gnu/c++/13',
+            '-I/usr/include/c++/13/backward',
+            '-I/usr/include',
+            '-I/usr/include/x86_64-linux-gnu',
+            '-I/usr/local/include',
+          })
         end
-        return flags
+
+        if filetype == 'c' then
+          table.insert(base_flags, '-std=gnu11')
+        elseif filetype == 'cpp' then
+          table.insert(base_flags, '-std=c++20')
+        end
+
+        return base_flags
       end
 
-      ------------------------------------------------------------------
-      -- SERVER TABLE: Add new LSP servers here (one entry = done).
-      -- The loop below handles vim.lsp.config(), vim.lsp.enable(),
-      -- and adds the server to mason-tool-installer automatically.
-      ------------------------------------------------------------------
-      local servers = {
-        lua_ls = {
-          mason = 'lua-language-server',
-          cmd = { 'lua-language-server' },
-          filetypes = { 'lua' },
-          root_markers = { '.luarc.json', '.luarc.jsonc', '.stylua.toml', 'stylua.toml', '.git' },
-          settings = {
-            Lua = {
-              completion = { callSnippet = 'Replace' },
+      -- Server-specific overrides (merged on top of '*' defaults and lspconfig defaults)
+      vim.lsp.config('lua_ls', {
+        settings = {
+          Lua = {
+            completion = {
+              callSnippet = 'Replace',
             },
           },
         },
+      })
 
-        clangd = {
-          cmd = {
-            'clangd',
-            '--compile-commands-dir=build',
-            '--header-insertion=iwyu',
-            '--completion-style=detailed',
-            '--function-arg-placeholders',
-            '--fallback-style=llvm',
-            '--clang-tidy',
-            '--all-scopes-completion',
-            '--cross-file-rename',
-            '--log=info',
-            '--background-index',
-            '--pch-storage=memory',
-            '--enable-config',
-            '--header-insertion-decorators',
-            '--suggest-missing-includes',
-            '--query-driver=/usr/bin/g++,/usr/bin/gcc,/usr/bin/clang++,/usr/bin/clang',
-          },
-          filetypes = { 'c', 'cpp' },
-          root_markers = {
-            '.clangd',
-            '.clang-tidy',
-            '.clang-format',
-            'compile_commands.json',
-            'compile_flags.txt',
-            '.git',
-          },
-          capabilities = {
-            textDocument = {
-              completion = { editsNearCursor = true },
-            },
-            offsetEncoding = { 'utf-8', 'utf-16' },
-          },
-          init_options = {
-            usePlaceholders = true,
-            completeUnimported = true,
-            clangdFileStatus = true,
-            fallbackFlags = get_fallback_flags 'cpp',
-          },
+      vim.lsp.config('clangd', {
+        cmd = { 
+          'clangd', 
+          -- No --compile-commands-dir: clangd auto-discovers (parent dirs + build/ subdirs)
+          '--header-insertion=iwyu',
+          '--completion-style=detailed',
+          '--function-arg-placeholders',
+          '--fallback-style=llvm',
+          '--clang-tidy',
+          '--all-scopes-completion',
+          '--background-index',
+          '--pch-storage=memory',
+          '--enable-config',
+          '--header-insertion-decorators',
         },
+        filetypes = { 'c', 'cpp' },
+        root_markers = {
+          '.clangd',
+          '.clang-tidy',
+          '.clang-format',
+          'compile_commands.json',
+          'compile_flags.txt',
+          '.git',
+        },
+        capabilities = {
+          textDocument = {
+            completion = {
+              editsNearCursor = true,
+            },
+          },
+          offsetEncoding = { 'utf-8', 'utf-16' },
+        },
+        init_options = {
+          usePlaceholders = true,
+          completeUnimported = true,
+          clangdFileStatus = true,
+          fallbackFlags = get_fallback_flags('cpp'),
+        },
+      })
 
-        gopls = {},
-
-        -- To add a new server, just add an entry here.
-        -- Use `mason = 'pkg-name'` if the Mason name differs from the lspconfig name.
-        -- Examples:
-        -- pyright = {},
-        -- gopls = {},
-        -- ts_ls = { mason = 'typescript-language-server' },
-      }
-
-      -- Non-LSP tools that Mason should also install
-      local extra_tools = { 'stylua', 'clang-format' }
-
-      -- Configure, enable, and collect all servers in one loop
-      local ensure_installed = vim.list_extend({}, extra_tools)
-      for name, config in pairs(servers) do
-        local mason_name = config.mason or name
-        config.mason = nil
-        config.capabilities = vim.tbl_deep_extend('force', capabilities, config.capabilities or {})
-        vim.lsp.config(name, config)
-        vim.lsp.enable(name)
-        table.insert(ensure_installed, mason_name)
-      end
+      -- Enable LSP servers
+      vim.lsp.enable({ 'lua_ls', 'clangd', 'gopls'})
 
       require('mason-tool-installer').setup {
-        ensure_installed = ensure_installed,
+        ensure_installed = { 'lua_ls', 'clangd', 'gopls', 'stylua', 'clang-format' },
       }
     end,
   },
 }
+

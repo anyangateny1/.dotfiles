@@ -6,9 +6,6 @@ return {
       ui = {
         winblend = 10,
         border = 'rounded',
-        colors = {
-          normal_bg = '#002b36',
-        },
       },
       lightbulb = {
         enable = false,
@@ -94,8 +91,8 @@ return {
     keymap({ 'n', 'v' }, '<leader>ca', '<cmd>Lspsaga code_action<CR>', { desc = 'LSP: Code actions' })
     keymap('n', '<leader>rn', '<cmd>Lspsaga rename<CR>', { desc = 'LSP: Rename symbol' })
     
-    -- Definition and type definition
-    keymap('n', 'gd', '<cmd>Lspsaga goto_definition<CR>', { desc = 'LSP: Goto definition' })
+    -- Definition and type definition (gd uses built-in to avoid "empty" popup when LSP has no result)
+    keymap('n', 'gd', vim.lsp.buf.definition, { desc = 'LSP: Goto definition' })
     keymap('n', 'gD', vim.lsp.buf.declaration, { desc = 'LSP: Goto declaration' })
     keymap('n', 'gt', '<cmd>Lspsaga peek_type_definition<CR>', { desc = 'LSP: Peek type definition' })
     keymap('n', 'gT', '<cmd>Lspsaga goto_type_definition<CR>', { desc = 'LSP: Goto type definition' })
@@ -109,11 +106,11 @@ return {
     keymap('n', 'gr', vim.lsp.buf.references, { desc = 'LSP: References' })
     keymap('n', 'gI', vim.lsp.buf.implementation, { desc = 'LSP: Goto implementation' })
 
-    -- Diagnostics
-    keymap('n', '<leader>sl', '<cmd>Lspsaga show_line_diagnostics<CR>', { desc = 'LSP: Show line diagnostics' })
-    keymap('n', '<leader>sb', '<cmd>Lspsaga show_buf_diagnostics<CR>', { desc = 'LSP: Show buffer diagnostics' })
-    keymap('n', '<leader>sW', '<cmd>Lspsaga show_workspace_diagnostics<CR>', { desc = 'LSP: Show workspace diagnostics' })
-    keymap('n', '<leader>sc', '<cmd>Lspsaga show_cursor_diagnostics<CR>', { desc = 'LSP: Show cursor diagnostics' })
+    -- Diagnostics (under <leader>l to avoid conflict with telescope <leader>s)
+    keymap('n', '<leader>ll', '<cmd>Lspsaga show_line_diagnostics<CR>', { desc = 'LSP: Show line diagnostics' })
+    keymap('n', '<leader>lb', '<cmd>Lspsaga show_buf_diagnostics<CR>', { desc = 'LSP: Show buffer diagnostics' })
+    keymap('n', '<leader>lw', '<cmd>Lspsaga show_workspace_diagnostics<CR>', { desc = 'LSP: Show workspace diagnostics' })
+    keymap('n', '<leader>lc', '<cmd>Lspsaga show_cursor_diagnostics<CR>', { desc = 'LSP: Show cursor diagnostics' })
 
     -- Diagnostic navigation
     keymap('n', '[e', '<cmd>Lspsaga diagnostic_jump_prev<CR>', { desc = 'LSP: Previous diagnostic' })

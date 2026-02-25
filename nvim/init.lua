@@ -1,4 +1,5 @@
 require 'custom.options'
+require 'custom.commands'
 require 'custom.keymaps'
 require 'custom.autocmds'
 require 'custom.lazy'

@@ -157,12 +157,12 @@ return {
         },
       },
       follow_current_file = {
-        enabled = false, -- This will find and focus the file in the active buffer every time
-        leave_dirs_open = false, -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
+        enabled = true,
+        leave_dirs_open = true,
       },
-      group_empty_dirs = false, -- when true, empty folders will be grouped together
+      group_empty_dirs = false,
       hijack_netrw_behavior = "open_current",
-      use_libuv_file_watcher = false, -- This will use the OS level file watchers to detect changes
+      use_libuv_file_watcher = true,
       window = {
         mappings = {
           ["<bs>"] = "navigate_up",

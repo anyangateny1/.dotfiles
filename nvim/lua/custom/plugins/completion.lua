@@ -14,6 +14,7 @@ return {
     'saadparwaiz1/cmp_luasnip',
     'hrsh7th/cmp-nvim-lsp',
     'hrsh7th/cmp-path',
+    'hrsh7th/cmp-buffer',
     'hrsh7th/cmp-nvim-lsp-signature-help',
   },
   config = function()
@@ -51,16 +52,17 @@ return {
         { name = 'nvim_lsp' },
         { name = 'luasnip' },
         { name = 'path' },
+        { name = 'buffer', keyword_length = 3 },
         { name = 'nvim_lsp_signature_help' },
       },
       window = {
-        completion = {
+        completion = cmp.config.window.bordered({
           max_height = 10,
           scrollbar = true,
-        },
-        documentation = {
+        }),
+        documentation = cmp.config.window.bordered({
           max_width = 60,
-        },
+        }),
       },
     }
   end,
