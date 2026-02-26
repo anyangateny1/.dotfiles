@@ -2,7 +2,7 @@ return {
   'nvimdev/lspsaga.nvim',
   event = 'LspAttach',
   config = function()
-    require('lspsaga').setup({
+    require('lspsaga').setup {
       ui = {
         winblend = 10,
         border = 'rounded',
@@ -81,7 +81,7 @@ return {
         open_link = 'gx',
         open_browser = '!chrome',
       },
-    })
+    }
 
     -- LSP Saga keymaps (these take priority over base LSP)
     local keymap = vim.keymap.set
@@ -90,7 +90,7 @@ return {
     keymap('n', 'gh', '<cmd>Lspsaga finder<CR>', { desc = 'LSP: Find symbol (def/ref/impl)' })
     keymap({ 'n', 'v' }, '<leader>ca', '<cmd>Lspsaga code_action<CR>', { desc = 'LSP: Code actions' })
     keymap('n', '<leader>rn', '<cmd>Lspsaga rename<CR>', { desc = 'LSP: Rename symbol' })
-    
+
     -- Definition and type definition (gd uses built-in to avoid "empty" popup when LSP has no result)
     keymap('n', 'gd', vim.lsp.buf.definition, { desc = 'LSP: Goto definition' })
     keymap('n', 'gD', vim.lsp.buf.declaration, { desc = 'LSP: Goto declaration' })
@@ -116,10 +116,10 @@ return {
     keymap('n', '[e', '<cmd>Lspsaga diagnostic_jump_prev<CR>', { desc = 'LSP: Previous diagnostic' })
     keymap('n', ']e', '<cmd>Lspsaga diagnostic_jump_next<CR>', { desc = 'LSP: Next diagnostic' })
     keymap('n', '[E', function()
-      require('lspsaga.diagnostic'):goto_prev({ severity = vim.diagnostic.severity.ERROR })
+      require('lspsaga.diagnostic'):goto_prev { severity = vim.diagnostic.severity.ERROR }
     end, { desc = 'LSP: Previous error' })
     keymap('n', ']E', function()
-      require('lspsaga.diagnostic'):goto_next({ severity = vim.diagnostic.severity.ERROR })
+      require('lspsaga.diagnostic'):goto_next { severity = vim.diagnostic.severity.ERROR }
     end, { desc = 'LSP: Next error' })
 
     -- Call hierarchy
@@ -131,10 +131,10 @@ return {
 
     -- Terminal
     keymap({ 'n', 't' }, '<A-d>', '<cmd>Lspsaga term_toggle<CR>', { desc = 'Toggle floating terminal' })
-
   end,
   dependencies = {
     'nvim-treesitter/nvim-treesitter',
     'nvim-tree/nvim-web-devicons',
   },
-} 
+}
+

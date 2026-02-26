@@ -212,7 +212,8 @@ return {
       vim.lsp.config('clangd', {
         cmd = {
           'clangd',
-          -- No --compile-commands-dir: clangd auto-discovers (parent dirs + build/ subdirs)
+          '--compile-commands-dir=build',
+          '--query-driver=/usr/bin/g++,/usr/bin/gcc,/usr/bin/clang++,/usr/bin/clang',
           '--header-insertion=iwyu',
           '--completion-style=detailed',
           '--function-arg-placeholders',
@@ -223,6 +224,8 @@ return {
           '--pch-storage=memory',
           '--enable-config',
           '--header-insertion-decorators',
+          '--limit-results=0',
+          '--limit-references=0',
         },
         filetypes = { 'c', 'cpp' },
         root_markers = {
