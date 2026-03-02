@@ -212,43 +212,23 @@ return {
       vim.lsp.config('clangd', {
         cmd = {
           'clangd',
-          '--compile-commands-dir=build',
-          '--query-driver=/usr/bin/g++,/usr/bin/gcc,/usr/bin/clang++,/usr/bin/clang',
-          '--header-insertion=iwyu',
-          '--completion-style=detailed',
-          '--function-arg-placeholders',
-          '--fallback-style=llvm',
+          '--compile-commands-dir=build', -- points to your compile_commands.json
+          '--background-index',
           '--clang-tidy',
           '--all-scopes-completion',
-          '--background-index',
+          '--completion-style=detailed',
+          '--header-insertion=iwyu',
+          '--function-arg-placeholders',
           '--pch-storage=memory',
           '--enable-config',
-          '--header-insertion-decorators',
-          '--limit-results=0',
-          '--limit-references=0',
+          '--query-driver=/usr/bin/g++*', -- note the * wildcard to match GCC versions
         },
-        filetypes = { 'c', 'cpp' },
-        root_markers = {
-          '.clangd',
-          '.clang-tidy',
-          '.clang-format',
-          'compile_commands.json',
-          'compile_flags.txt',
-          '.git',
-        },
-        capabilities = {
-          textDocument = {
-            completion = {
-              editsNearCursor = true,
-            },
-          },
-          offsetEncoding = { 'utf-8', 'utf-16' },
-        },
+        filetypes = { 'c', 'cpp', 'hpp', 'h' },
+        root_markers = { '.git', 'compile_commands.json', '.clangd' },
         init_options = {
           usePlaceholders = true,
           completeUnimported = true,
           clangdFileStatus = true,
-          fallbackFlags = get_fallback_flags 'cpp',
         },
       })
 

@@ -1,0 +1,22 @@
+CompileFlags:
+  Remove:
+    - -Werror
+    - -fcoroutines
+    - -D_Noreturn*
+    - -Wno-suggest-attribute=*
+    - -Wno-abi-tag
+    - -Wno-multiple-inheritance
+    - -Wno-c++20-compat
+    - -Wno-disabled-optimization
+    - -Wunused-const-variable=*
+  Add:
+    - -ferror-limit=0
+    - -stdlib=libstdc++
+
+---
+If:
+  PathMatch:
+    - build/.*
+    - subprojects/.*
+Diagnostics:
+  Suppress: '*'
