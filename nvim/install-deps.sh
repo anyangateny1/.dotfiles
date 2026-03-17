@@ -82,12 +82,26 @@ install_if_missing make make
 echo ""
 echo "--- Treesitter dependencies ---"
 
-# C compiler: required by nvim-treesitter to compile parsers
+# C compiler: required by tree-sitter CLI to compile parsers
 if command -v cc &>/dev/null || command -v gcc &>/dev/null; then
   echo "  [ok] C compiler"
 else
   echo "  [..] Installing gcc (needed to compile treesitter parsers)..."
   $INSTALL gcc 2>/dev/null || echo "  [!!] Failed to install gcc"
+fi
+
+# tree-sitter CLI: required by nvim-treesitter (main branch) to build parsers
+if command -v tree-sitter &>/dev/null; then
+  echo "  [ok] tree-sitter CLI"
+else
+  echo "  [..] Installing tree-sitter CLI..."
+  if command -v cargo &>/dev/null; then
+    cargo install tree-sitter-cli 2>/dev/null || echo "  [!!] Failed to install via cargo"
+  elif command -v npm &>/dev/null; then
+    npm install -g tree-sitter-cli 2>/dev/null || echo "  [!!] Failed to install via npm"
+  else
+    echo "  [!!] Install cargo or npm first, then run: cargo install tree-sitter-cli"
+  fi
 fi
 
 echo ""
