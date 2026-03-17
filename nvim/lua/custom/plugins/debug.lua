@@ -137,7 +137,7 @@ return {
     local function get_default_executable()
       local cwd = vim.fn.getcwd()
       local basename = vim.fn.fnamemodify(vim.fn.bufname '%', ':t:r')
-      local candidate = cwd .. '/build/' .. basename
+      local candidate = cwd .. '/bin/' .. basename
       if vim.fn.filereadable(candidate) == 1 and vim.fn.executable(candidate) == 1 then
         return candidate
       end
@@ -152,7 +152,7 @@ return {
         program = get_default_executable,
         cwd = '${workspaceFolder}',
         stopOnEntry = false,
-        args = {},
+        args = { '--simulate', '-c /root/Micro-X/tomo-system-centre/example_scan_config.json' },
       },
       {
         name = 'Attach to process',
@@ -176,4 +176,3 @@ return {
     }
   end,
 }
-

@@ -35,6 +35,12 @@ vim.opt.shiftwidth = 4
 vim.opt.softtabstop = 4
 vim.opt.expandtab = true
 
+-- Folding
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.opt.foldlevel = 99
+vim.opt.foldenable = true
+
 -- Defer clipboard to avoid startup slowdown
 vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'

@@ -233,7 +233,7 @@ return {
       })
 
       -- Enable LSP servers
-      vim.lsp.enable { 'lua_ls', 'clangd' }
+      vim.lsp.enable { 'lua_ls', 'clangd', 'clang-format' }
 
       require('mason-tool-installer').setup {
         ensure_installed = { 'lua_ls', 'clangd', 'stylua', 'clang-format' },
