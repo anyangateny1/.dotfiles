@@ -93,9 +93,6 @@ return {
               end
             end
             map('<leader>ch', switch_source_header, '[C]langd Switch header/source')
-            map('<leader>cI', function()
-              vim.cmd 'Telescope lsp_incoming_calls'
-            end, '[C]langd [I]nclude hierarchy')
           end
 
           local function client_supports_method(client, method, bufnr)

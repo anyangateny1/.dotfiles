@@ -27,9 +27,9 @@ return {
       desc = '[F]ormat buffer',
     },
     {
-      '<leader>ci',
+      '<leader>cf',
       '<cmd>ConformInfo<cr>',
-      desc = '[C]onform [I]nfo',
+      desc = '[C]onform In[f]o',
     },
   },
 
