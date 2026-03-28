@@ -175,6 +175,94 @@ return {
           spacing = 2,
         },
       }
+
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+
+      -- Apply cmp-nvim-lsp capabilities to all servers via wildcard
+      vim.lsp.config('*', {
+        capabilities = capabilities,
+      })
+
+      local function get_fallback_flags(filetype)
+        local base_flags = {
+          '-D__STDC_CONSTANT_MACROS',
+          '-D__STDC_FORMAT_MACROS',
+          '-D__STDC_LIMIT_MACROS',
+        }
+
+        if vim.fn.has 'mac' == 1 then
+          local sdk = vim.trim(vim.fn.system 'xcrun --show-sdk-path 2>/dev/null')
+          if sdk ~= '' then
+            table.insert(base_flags, '-isysroot')
+            table.insert(base_flags, sdk)
+          end
+          vim.list_extend(base_flags, {
+            '-I/usr/local/include',
+            '-I/opt/homebrew/include',
+          })
+        else
+          vim.list_extend(base_flags, {
+            '-I/usr/include/c++/13',
+            '-I/usr/include/x86_64-linux-gnu/c++/13',
+            '-I/usr/include/c++/13/backward',
+            '-I/usr/include',
+            '-I/usr/include/x86_64-linux-gnu',
+            '-I/usr/local/include',
+          })
+        end
+
+        if filetype == 'c' then
+          table.insert(base_flags, '-std=gnu11')
+        elseif filetype == 'cpp' then
+          table.insert(base_flags, '-std=c++20')
+        end
+
+        return base_flags
+      end
+
+      -- Server-specific overrides (merged on top of '*' defaults and lspconfig defaults)
+      vim.lsp.config('lua_ls', {
+        settings = {
+          Lua = {
+            completion = {
+              callSnippet = 'Replace',
+            },
+          },
+        },
+      })
+
+      vim.lsp.config('clangd', {
+        cmd = {
+          'clangd',
+          '--compile-commands-dir=build', -- points to your compile_commands.json
+          '--background-index',
+          '--clang-tidy',
+          '--all-scopes-completion',
+          '--completion-style=detailed',
+          '--header-insertion=iwyu',
+          '--function-arg-placeholders',
+          '--pch-storage=memory',
+          '--enable-config',
+          '--query-driver=/usr/bin/g++*', -- note the * wildcard to match GCC versions
+        },
+        filetypes = { 'c', 'cpp', 'hpp', 'h' },
+        root_markers = { '.git', 'compile_commands.json', '.clangd' },
+        init_options = {
+          usePlaceholders = true,
+          completeUnimported = true,
+          clangdFileStatus = true,
+        },
+      })
+
+      vim.lsp.config('markdown-oxide', {})
+
+      -- Enable LSP servers
+      vim.lsp.enable { 'lua_ls', 'clangd', 'stylua', 'clang-format', 'pyright', 'autopep8', 'markdown-oxide' }
+
+      require('mason-tool-installer').setup {
+        ensure_installed = { 'lua_ls', 'clangd', 'stylua', 'clang-format', 'pyright', 'autopep8', 'markdown-oxide' },
+      }
     end,
   },
 }

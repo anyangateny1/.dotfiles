@@ -44,6 +44,7 @@ esac
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
 force_color_prompt=yes
+#force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -132,6 +133,7 @@ for _fzf_bindings in \
   fi
 done
 unset _fzf_bindings
+source /usr/share/doc/fzf/examples/key-bindings.bash
 # avoid duplicates..
 export HISTCONTROL=ignoredups:erasedups
 # append history entries:

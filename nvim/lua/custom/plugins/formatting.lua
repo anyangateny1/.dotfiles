@@ -61,19 +61,7 @@ return {
       lua = { 'stylua' },
       c = { 'clang-format' },
       cpp = { 'clang-format' },
-      python = { 'ruff_organize_imports', 'ruff_format', 'ruff_fix' },
-      go = { 'gofumpt', 'goimports' },
-      javascriptreact = { 'eslint_d', 'prettier' },
-      typescript = { 'eslint_d', 'prettier' },
-      typescriptreact = { 'eslint_d', 'prettier' },
-      css = { 'prettier' },
-      scss = { 'prettier' },
-      less = { 'prettier' },
-      html = { 'prettier' },
-      json = { 'prettier' },
-      jsonc = { 'prettier' },
-      yaml = { 'prettier' },
-      markdown = { 'prettier' },
+      -- python = { 'autopep8' },
     },
 
     formatters = {
@@ -89,15 +77,6 @@ return {
           return style_file and vim.fs.dirname(style_file) or nil
         end,
         prepend_args = { '-style=file' },
-      },
-      ruff_format = {
-        prepend_args = { '--config', 'line-length=100' },
-      },
-      ruff_fix = {
-        prepend_args = { '--config', 'line-length=100' },
-      },
-      ruff_organize_imports = {
-        prepend_args = { '--config', 'line-length=100' },
       },
     },
   },
