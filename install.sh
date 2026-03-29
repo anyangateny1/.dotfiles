@@ -34,6 +34,13 @@ echo "=== Dotfiles installer ==="
 echo "Source: $DOTFILES_DIR"
 echo ""
 
+# Bash
+echo "--- Bash ---"
+link "$DOTFILES_DIR/bash/.bashrc" "$HOME/.bashrc"
+link "$DOTFILES_DIR/bash/.bash_profile" "$HOME/.bash_profile"
+link "$DOTFILES_DIR/bash/.profile" "$HOME/.profile"
+link "$DOTFILES_DIR/bash/.bash_completion" "$HOME/.bash_completion"
+
 # Neovim
 echo "--- Neovim ---"
 link "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
