@@ -203,9 +203,9 @@ return {
           })
         else
           vim.list_extend(base_flags, {
-            '-I/usr/include/c++/13',
-            '-I/usr/include/x86_64-linux-gnu/c++/13',
-            '-I/usr/include/c++/13/backward',
+            '-I/usr/include/c++/14',
+            '-I/usr/include/x86_64-linux-gnu/c++/14',
+            '-I/usr/include/c++/14/backward',
             '-I/usr/include',
             '-I/usr/include/x86_64-linux-gnu',
             '-I/usr/local/include',
@@ -215,7 +215,7 @@ return {
         if filetype == 'c' then
           table.insert(base_flags, '-std=gnu11')
         elseif filetype == 'cpp' then
-          table.insert(base_flags, '-std=c++20')
+          table.insert(base_flags, '-std=c++23')
         end
 
         return base_flags
@@ -241,7 +241,7 @@ return {
           '--all-scopes-completion',
           '--completion-style=detailed',
           '--header-insertion=iwyu',
-          '--function-arg-placeholders',
+          '--function-arg-placeholders=true',
           '--pch-storage=memory',
           '--enable-config',
           '--query-driver=/usr/bin/g++*', -- note the * wildcard to match GCC versions
@@ -255,13 +255,11 @@ return {
         },
       })
 
-      vim.lsp.config('markdown-oxide', {})
-
       -- Enable LSP servers
-      vim.lsp.enable { 'lua_ls', 'clangd', 'stylua', 'clang-format', 'pyright', 'autopep8', 'markdown-oxide' }
+      vim.lsp.enable { 'lua_ls', 'clangd', 'stylua', 'clang-format', 'pyright', 'autopep8', 'mesonlsp' }
 
       require('mason-tool-installer').setup {
-        ensure_installed = { 'lua_ls', 'clangd', 'stylua', 'clang-format', 'pyright', 'autopep8', 'markdown-oxide' },
+        ensure_installed = { 'lua_ls', 'clangd', 'stylua', 'clang-format', 'pyright', 'autopep8', 'mesonlsp' },
       }
     end,
   },

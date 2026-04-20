@@ -1,5 +1,5 @@
 [font]
-size = 10.0
+size = 11.0
 
 [font.normal]
 family = "JetBrains Mono"
@@ -12,3 +12,11 @@ style = "Bold"
 [font.italic]
 family = "JetBrains Mono"
 style = "Italic"
+
+[keyboard]
+
+[[keyboard.bindings]]
+key = "0"
+mods = "Control"
+action = "None"
+

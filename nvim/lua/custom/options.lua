@@ -48,5 +48,4 @@ vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
 
--- Spell is enabled per-filetype in autocmds.lua (markdown, gitcommit, etc.)
 vim.opt.spelllang = { 'en_au' }

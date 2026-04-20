@@ -17,7 +17,7 @@ return {
   config = function()
     require('telescope').setup {
       defaults = {
-        file_ignore_patterns = { 'node_modules' },
+        file_ignore_patterns = { 'node_modules', 'subprojects' },
       },
       extensions = {
         ['ui-select'] = {
@@ -25,8 +25,8 @@ return {
         },
       },
     }
-    pcall(require('telescope').load_extension, 'fzf')
-    pcall(require('telescope').load_extension, 'ui-select')
+    require('telescope').load_extension 'fzf'
+    require('telescope').load_extension 'ui-select'
 
     -- Telescope keymaps
     local builtin = require 'telescope.builtin'
@@ -57,4 +57,3 @@ return {
     end, { desc = '[S]earch [N]eovim files' })
   end,
 }
-
