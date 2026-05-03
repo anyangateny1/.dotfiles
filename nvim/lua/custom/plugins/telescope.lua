@@ -17,7 +17,7 @@ return {
   config = function()
     require('telescope').setup {
       defaults = {
-        file_ignore_patterns = { 'node_modules', 'subprojects' },
+        file_ignore_patterns = { 'node_modules', 'subprojects', 'venv' },
       },
       extensions = {
         ['ui-select'] = {

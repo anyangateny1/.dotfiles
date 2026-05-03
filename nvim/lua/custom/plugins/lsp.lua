@@ -222,7 +222,7 @@ return {
       end
 
       -- Server-specific overrides (merged on top of '*' defaults and lspconfig defaults)
-      vim.lsp.config('lua_ls', {
+      vim.lsp.config('lua-language-server', {
         settings = {
           Lua = {
             completion = {
@@ -256,10 +256,10 @@ return {
       })
 
       -- Enable LSP servers
-      vim.lsp.enable { 'lua_ls', 'clangd', 'stylua', 'clang-format', 'pyright', 'autopep8', 'mesonlsp' }
+      vim.lsp.enable { 'lua-language-server', 'clangd', 'stylua', 'clang-format', 'pyright', 'mesonlsp' }
 
       require('mason-tool-installer').setup {
-        ensure_installed = { 'lua_ls', 'clangd', 'stylua', 'clang-format', 'pyright', 'autopep8', 'mesonlsp' },
+        ensure_installed = { 'lua-language-server', 'clangd', 'stylua', 'clang-format', 'pyright', 'mesonlsp' },
       }
     end,
   },

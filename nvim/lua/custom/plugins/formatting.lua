@@ -61,7 +61,7 @@ return {
       lua = { 'stylua' },
       c = { 'clang-format' },
       cpp = { 'clang-format' },
-      -- python = { 'autopep8' },
+      python = { 'ruff_organize_imports', 'ruff_format', 'ruff_fix' },
     },
 
     formatters = {
@@ -78,6 +78,9 @@ return {
         end,
         prepend_args = { '-style=file' },
       },
+      ruff_format = {},
+      ruff_fix = {},
+      ruff_organize_imports = {},
     },
   },
 }

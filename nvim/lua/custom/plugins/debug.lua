@@ -113,7 +113,52 @@ return {
     -- Per-project configs: .vscode/launch.json (auto-loaded by nvim-dap).
     -- Template: ~/.config/nvim/launch.json.example
 
-    require('dap-python').setup()
+    dap.configurations.cpp = {
+      {
+        name = 'Launch',
+        type = 'codelldb',
+        request = 'launch',
+        program = get_default_executable,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+        args = { '--simulate', '-c /root/Micro-X/tomo-system-centre/example_scan_config.json' },
+      },
+      {
+        name = 'Attach to process',
+        type = 'codelldb',
+        request = 'attach',
+        pid = require('dap.utils').pick_process,
+        cwd = '${workspaceFolder}',
+      },
+    }
+    dap.configurations.c = dap.configurations.cpp
+
+    dap.configurations.python = {
+      {
+        -- The first three options are required by nvim-dap
+        type = 'python', -- the type here established the link to the adapter definition: `dap.adapters.python`
+        request = 'launch',
+        name = 'Launch file',
+
+        program = '${file}', -- This configuration will launch the current file if used.
+        pythonPath = function()
+          local cwd = vim.fn.getcwd()
+          if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
+            return cwd .. '/venv/bin/python'
+          elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
+            return cwd .. '/.venv/bin/python'
+          else
+            return '/usr/bin/python'
+          end
+        end,
+      },
+    }
+
+    require('dap.ext.vscode').load_launchjs(nil, { codelldb = { 'c', 'cpp' } })
+
+    require('debugpy').setup() {}
+
+    -- Install golang specific config
     require('dap-go').setup {
       delve = {
         detached = vim.fn.has 'win32' == 0,
