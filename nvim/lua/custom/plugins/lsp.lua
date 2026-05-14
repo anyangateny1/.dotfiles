@@ -11,9 +11,31 @@ return {
 
   {
     'williamboman/mason.nvim',
-    dependencies = {
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
-      'hrsh7th/cmp-nvim-lsp',
+    opts = {},
+  },
+  {
+    'WhoIsSethDaniel/mason-tool-installer.nvim',
+    dependencies = { 'williamboman/mason.nvim' },
+    opts = {
+      ensure_installed = {
+        'lua-language-server',
+        'clangd',
+        'pyright',
+        'markdown-oxide',
+        'typescript-language-server',
+        'eslint-lsp',
+        'tailwindcss-language-server',
+        'css-lsp',
+        'html-lsp',
+        'json-lsp',
+        'emmet-language-server',
+        'stylua',
+        'clang-format',
+        'ruff',
+        'markdownlint-cli2',
+        'prettier',
+        'eslint_d',
+      },
     },
     config = function()
       require('mason').setup()

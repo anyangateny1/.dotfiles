@@ -58,10 +58,24 @@ return {
     formatters_by_ft = {
       lua = { 'stylua' },
       cpp = { 'clang-format' },
-      c = { 'clang-format' },
+      python = { 'ruff_organize_imports', 'ruff_format', 'ruff_fix' },
+      javascriptreact = { 'eslint_d', 'prettier' },
+      typescript = { 'eslint_d', 'prettier' },
+      typescriptreact = { 'eslint_d', 'prettier' },
+      css = { 'prettier' },
+      scss = { 'prettier' },
+      less = { 'prettier' },
+      html = { 'prettier' },
+      json = { 'prettier' },
+      jsonc = { 'prettier' },
+      yaml = { 'prettier' },
+      markdown = { 'prettier' },
     },
 
     formatters = {
+      eslint_d = {
+        command = 'eslint_d',
+      },
       ['clang-format'] = {
         condition = function(_, ctx)
           local style_file = vim.fs.find({ 'clang-format.yaml', '.clang-format', '_clang-format' }, { path = ctx.filename, upward = true })[1]
