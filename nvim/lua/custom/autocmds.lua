@@ -9,16 +9,17 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
--- Remove trailing whitespace from C/C++ files before save
+-- Trim trailing whitespace before save (toggle with vim.g.trim_whitespace)
 vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = { '*.cpp', '*.h', '*.hpp', '*.c', '*.cc', '*.cxx' },
-  group = vim.api.nvim_create_augroup('cpp-trailing-whitespace', { clear = true }),
+  group = vim.api.nvim_create_augroup('trim-whitespace', { clear = true }),
   callback = function()
-    local save_cursor = vim.fn.getpos '.'
+    if not vim.g.trim_whitespace then
+      return
+    end
+    local pos = vim.fn.getpos '.'
     vim.cmd [[%s/\s\+$//e]]
-    vim.fn.setpos('.', save_cursor)
+    vim.fn.setpos('.', pos)
   end,
-  desc = 'Remove trailing whitespace from C/C++ files before save',
 })
 
 -- C/C++ indentation settings
@@ -35,4 +36,20 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.opt_local.softtabstop = 4
   end,
   desc = 'C-style indentation for C/C++ files',
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'markdown', 'text' },
+  callback = function()
+    vim.opt_local.textwidth = 100
+  end,
+})
+
+-- Spell only in prose-like buffers (toggle anytime with <leader>ts)
+vim.api.nvim_create_autocmd('FileType', {
+  group = vim.api.nvim_create_augroup('spell-prose', { clear = true }),
+  pattern = { 'markdown', 'text', 'gitcommit', 'gitrebase' },
+  callback = function()
+    vim.opt_local.spell = true
+  end,
 })

@@ -5,6 +5,10 @@ vim.keymap.set('n', '<C-d>', '<C-d>zz', { noremap = true, silent = true, desc = 
 vim.keymap.set('n', '<C-u>', '<C-u>zz', { noremap = true, silent = true, desc = 'Scroll up (centered)' })
 vim.keymap.set('n', '<C-s>', '<cmd>wa<CR>', { silent = true, desc = 'Save all buffers' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic quickfix list' })
+vim.keymap.set('n', '<leader>ts', function()
+  vim.opt.spell = not vim.opt.spell:get()
+  vim.notify('Spell ' .. (vim.opt.spell:get() and 'on' or 'off'), vim.log.levels.INFO)
+end, { desc = '[T]oggle [S]pell' })
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- Move selected lines up/down in visual mode

@@ -16,10 +16,15 @@ return {
     'hrsh7th/cmp-path',
     'hrsh7th/cmp-buffer',
     'hrsh7th/cmp-nvim-lsp-signature-help',
+    'windwp/nvim-autopairs',
   },
   config = function()
     local cmp = require 'cmp'
     local luasnip = require 'luasnip'
+
+    local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
+    cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+
     luasnip.config.setup {}
     cmp.setup {
       snippet = {
@@ -66,4 +71,4 @@ return {
       },
     }
   end,
-} 
+}

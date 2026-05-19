@@ -1,0 +1,43 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++: Launch",
+      "type": "codelldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/your_binary",
+      "cwd": "${workspaceFolder}",
+      "args": [],
+      "stopOnEntry": false
+    },
+    {
+      "name": "C/C++: Attach to process",
+      "type": "codelldb",
+      "request": "attach",
+      "pid": "${command:pickProcess}",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Go: Launch package",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}"
+    },
+    {
+      "name": "Go: Launch current file",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${file}"
+    },
+    {
+      "name": "Python: Current file",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ]
+}

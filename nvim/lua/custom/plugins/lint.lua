@@ -6,7 +6,8 @@ return {
   config = function()
     local lint = require 'lint'
     lint.linters_by_ft = {
-      markdown = { 'markdownlint' },
+      -- Mason installs `markdownlint-cli2` (binary markdownlint-cli2), not legacy `markdownlint`
+      markdown = { 'markdownlint-cli2' },
       -- Add more linters as needed:
       -- python = { 'pylint' },
       -- javascript = { 'eslint' },
@@ -56,7 +57,7 @@ return {
         -- avoid superfluous noise, notably within the handy LSP pop-ups that
         -- describe the hovered symbol using Markdown.
         if vim.bo.modifiable then
-          lint.try_lint()
+          lint.try_lint(nil, { ignore_errors = true })
         end
       end,
     })

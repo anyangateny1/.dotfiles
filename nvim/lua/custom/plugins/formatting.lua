@@ -1,3 +1,15 @@
+local function find_clang_style(path)
+  return vim.fs.find({ '.clang-format', '_clang-format', 'clang-format.yaml' }, {
+    path = path,
+    upward = true,
+  })[1]
+end
+
+local function has_clang_style(bufnr)
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  return find_clang_style(filename) ~= nil
+end
+
 return {
   'stevearc/conform.nvim',
   event = { 'BufWritePre' },
@@ -7,15 +19,11 @@ return {
     {
       '<leader>f',
       function()
-        local bufname = vim.api.nvim_buf_get_name(0)
+        local ft = vim.bo.filetype
 
-        if vim.bo.filetype == 'cpp' or vim.bo.filetype == 'c' then
-          local style_file = vim.fs.find({ 'clang-format.yaml', '.clang-format', '_clang-format' }, { path = bufname, upward = true })[1]
-
-          if not style_file then
-            vim.notify('clang-format: no style file found — skipping format', vim.log.levels.WARN)
-            return
-          end
+        if (ft == 'c' or ft == 'cpp') and not has_clang_style(0) then
+          vim.notify('clang-format: no style file found — skipping format', vim.log.levels.WARN)
+          return
         end
 
         require('conform').format {
@@ -39,14 +47,8 @@ return {
     format_on_save = function(bufnr)
       local ft = vim.bo[bufnr].filetype
 
-      -- 🚫 skip C/C++ if no style file
-      if ft == 'c' or ft == 'cpp' then
-        local filename = vim.api.nvim_buf_get_name(bufnr)
-        local style_file = vim.fs.find({ 'clang-format.yaml', '.clang-format', '_clang-format' }, { path = filename, upward = true })[1]
-
-        if not style_file then
-          return nil
-        end
+      if (ft == 'c' or ft == 'cpp') and not has_clang_style(bufnr) then
+        return nil
       end
 
       return {
@@ -57,8 +59,10 @@ return {
 
     formatters_by_ft = {
       lua = { 'stylua' },
+      c = { 'clang-format' },
       cpp = { 'clang-format' },
       python = { 'ruff_organize_imports', 'ruff_format', 'ruff_fix' },
+      go = { 'gofumpt', 'goimports' },
       javascriptreact = { 'eslint_d', 'prettier' },
       typescript = { 'eslint_d', 'prettier' },
       typescriptreact = { 'eslint_d', 'prettier' },
@@ -78,21 +82,22 @@ return {
       },
       ['clang-format'] = {
         condition = function(_, ctx)
-          local style_file = vim.fs.find({ 'clang-format.yaml', '.clang-format', '_clang-format' }, { path = ctx.filename, upward = true })[1]
-          return style_file ~= nil
+          return find_clang_style(ctx.filename) ~= nil
         end,
-
         cwd = function(_, ctx)
-          local style_file = vim.fs.find({ 'clang-format.yaml', '.clang-format', '_clang-format' }, { path = ctx.filename, upward = true })[1]
-          if style_file then
-            return vim.fn.fnamemodify(style_file, ':h')
-          end
+          local style_file = find_clang_style(ctx.filename)
+          return style_file and vim.fs.dirname(style_file) or nil
         end,
-
-        args = function(_, ctx)
-          local style_file = vim.fs.find({ 'clang-format.yaml', '.clang-format', '_clang-format' }, { path = ctx.filename, upward = true })[1]
-          return { '-style=file:' .. style_file }
-        end,
+        prepend_args = { '-style=file' },
+      },
+      ruff_format = {
+        prepend_args = { '--config', 'line-length=100' },
+      },
+      ruff_fix = {
+        prepend_args = { '--config', 'line-length=100' },
+      },
+      ruff_organize_imports = {
+        prepend_args = { '--config', 'line-length=100' },
       },
     },
   },

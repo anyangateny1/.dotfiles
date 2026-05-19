@@ -11,37 +11,37 @@ return {
 
   {
     'williamboman/mason.nvim',
-    opts = {},
-  },
-  {
-    'WhoIsSethDaniel/mason-tool-installer.nvim',
-    dependencies = { 'williamboman/mason.nvim' },
-    opts = {
-      ensure_installed = {
-        'lua-language-server',
-        'clangd',
-        'pyright',
-        'markdown-oxide',
-        'typescript-language-server',
-        'eslint-lsp',
-        'tailwindcss-language-server',
-        'css-lsp',
-        'html-lsp',
-        'json-lsp',
-        'emmet-language-server',
-        'stylua',
-        'clang-format',
-        'ruff',
-        'markdownlint-cli2',
-        'prettier',
-        'eslint_d',
-      },
+    dependencies = {
+      'WhoIsSethDaniel/mason-tool-installer.nvim',
+      'hrsh7th/cmp-nvim-lsp',
+      { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function()
       require('mason').setup()
 
       require('mason-tool-installer').setup {
-        ensure_installed = { 'lua-language-server', 'clangd', 'stylua', 'clang-format' },
+        ensure_installed = {
+          'lua-language-server',
+          'clangd',
+          'gopls',
+          'pyright',
+          'markdown-oxide',
+          'typescript-language-server',
+          'eslint-lsp',
+          'tailwindcss-language-server',
+          'css-lsp',
+          'html-lsp',
+          'json-lsp',
+          'emmet-language-server',
+          'stylua',
+          'clang-format',
+          'ruff',
+          'gofumpt',
+          'goimports',
+          'markdownlint-cli2',
+          'prettier',
+          'eslint_d',
+        },
       }
 
       vim.lsp.config('*', {
@@ -90,6 +90,7 @@ return {
                 end, bufnr)
                 return
               end
+              -- Fallback heuristic when clangd cannot resolve header/source
               local fname = vim.api.nvim_buf_get_name(bufnr)
               local stem, ext = fname:match '^(.*)%.([%w]+)$'
               if not stem then

@@ -43,7 +43,7 @@ esac
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -120,10 +120,22 @@ fi
 export EDITOR='nvim'
 export VISUAL='nvim'
 
-source /usr/share/doc/fzf/examples/key-bindings.bash
+# fzf shell integration (path differs by distro / install method)
+for _fzf_bindings in \
+  /usr/share/fzf/shell/key-bindings.bash \
+  /usr/share/doc/fzf/examples/key-bindings.bash \
+  "${HOME}/.fzf/shell/key-bindings.bash"; do
+  if [[ -f "${_fzf_bindings}" ]]; then
+    # shellcheck source=/dev/null
+    source "${_fzf_bindings}"
+    break
+  fi
+done
+unset _fzf_bindings
 # avoid duplicates..
 export HISTCONTROL=ignoredups:erasedups
 # append history entries:
 shopt -s histappend
 # After each command, save and reload history:
 export PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
+bind "set completion-ignore-case on"

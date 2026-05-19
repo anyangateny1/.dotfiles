@@ -1,1 +1,4 @@
 *.bak
+
+# Vendored theme pack (clone separately if needed)
+alacritty/themes/

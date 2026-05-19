@@ -35,6 +35,7 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.softtabstop = 4
 vim.opt.expandtab = true
+vim.g.trim_whitespace = true
 
 -- Folding
 vim.opt.foldmethod = 'expr'
@@ -46,3 +47,6 @@ vim.opt.foldenable = true
 vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
+
+-- Spell is enabled per-filetype in autocmds.lua (markdown, gitcommit, etc.)
+vim.opt.spelllang = { 'en_au' }
