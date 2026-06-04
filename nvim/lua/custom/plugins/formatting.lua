@@ -62,6 +62,7 @@ return {
       c = { 'clang-format' },
       cpp = { 'clang-format' },
       python = { 'ruff_organize_imports', 'ruff_format', 'ruff_fix' },
+      markdown = { 'markdownlint-cli2' },
     },
 
     formatters = {

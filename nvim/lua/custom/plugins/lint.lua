@@ -9,7 +9,7 @@ return {
       -- Mason installs `markdownlint-cli2` (binary markdownlint-cli2), not legacy `markdownlint`
       markdown = { 'markdownlint-cli2' },
       -- Add more linters as needed:
-      -- python = { 'pylint' },
+      python = { 'ruff' },
       -- javascript = { 'eslint' },
       -- typescript = { 'eslint' },
       -- json = { 'jsonlint' },
@@ -62,4 +62,5 @@ return {
       end,
     })
   end,
-} 
+}
+

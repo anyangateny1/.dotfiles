@@ -1,0 +1,1 @@
+return { 'charlesnicholson/plantuml.nvim' }
