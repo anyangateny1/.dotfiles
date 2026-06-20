@@ -1,5 +1,30 @@
--- Debug Adapter Protocol (DAP). Project-specific configs live in .vscode/launch.json.
--- See ~/.config/nvim/docs/debugging.md and launch.json.example.
+-- ═══════════════════════════════════════════════════════════════════════════
+--  Debugging — nvim-dap
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+--  Adapters installed by Mason (mason-nvim-dap auto-configures them):
+--    delve    → Go    (nvim-dap-go wraps it)
+--    debugpy  → Python (nvim-dap-python wraps it)
+--    codelldb → C / C++
+--
+--  Adding a new adapter
+--    1. Add the adapter name to ensure_installed below.
+--    2. Mason auto-applies the default config. For custom args, add a handler:
+--         handlers = { my_adapter = function() ... end }
+--    3. Per-project launch configs live in .vscode/launch.json.
+--
+--  Python venvs
+--    The adapter itself always runs from Mason's debugpy venv (see setup below).
+--    For the *debuggee* Python (your project's interpreter), nvim-dap-python
+--    resolves it in this order:
+--      1. .venv/bin/python  in the workspace root  (auto-detected, no config needed)
+--      2. $VIRTUAL_ENV  if you activated the venv before launching nvim
+--      3. Falls back to the Mason debugpy python
+--    Most projects with a standard .venv/ dir at the root just work.
+--    For non-standard layouts, put the path in .vscode/launch.json:
+--      "pythonPath": "${workspaceFolder}/my-env/bin/python"
+--
+-- ═══════════════════════════════════════════════════════════════════════════
 
 return {
   'mfussenegger/nvim-dap',
@@ -10,6 +35,7 @@ return {
     'jay-babu/mason-nvim-dap.nvim',
     'leoluz/nvim-dap-go',
     'mfussenegger/nvim-dap-python',
+    'theHamsta/nvim-dap-virtual-text',
   },
   keys = {
     {
@@ -113,7 +139,15 @@ return {
     -- Per-project configs: .vscode/launch.json (auto-loaded by nvim-dap).
     -- Template: ~/.config/nvim/launch.json.example
 
-    require('dap-python').setup()
+    -- Inline variable values while stepping through code.
+    require('nvim-dap-virtual-text').setup {
+      commented = true, -- show virtual text as a comment
+    }
+
+    -- Point the adapter at Mason's debugpy venv, not the system python3.
+    local mason_packages = vim.fn.stdpath 'data' .. '/mason/packages'
+    require('dap-python').setup(mason_packages .. '/debugpy/venv/bin/python')
+
     require('dap-go').setup {
       delve = {
         detached = vim.fn.has 'win32' == 0,

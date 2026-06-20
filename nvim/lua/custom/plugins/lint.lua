@@ -1,65 +1,41 @@
--- nvim-lint - Linting support for Neovim
--- Provides additional linting capabilities beyond LSP
+-- ═══════════════════════════════════════════════════════════════════════════
+--  Linting — nvim-lint
+-- ═══════════════════════════════════════════════════════════════════════════
+--
+--  Adding a linter
+--    1. Add the Mason package name to ensure_installed in lsp.lua.
+--    2. Add  filetype = { 'tool-name' }  to linters_by_ft below.
+--    Linting runs automatically on BufEnter, BufWritePost, and InsertLeave.
+--
+--  Skip this file if the LSP already provides diagnostics:
+--    lua_ls, clangd (--clang-tidy), gopls (staticcheck) → not listed here.
+--    pyright covers types; ruff fills in style/correctness for Python.
+--    JS/TS: handled by the eslint or biome LSP (see lsp/) → not listed here.
+--
+-- ═══════════════════════════════════════════════════════════════════════════
+
 return {
   'mfussenegger/nvim-lint',
   event = { 'BufReadPre', 'BufNewFile' },
   config = function()
     local lint = require 'lint'
+
     lint.linters_by_ft = {
-      -- Mason installs `markdownlint-cli2` (binary markdownlint-cli2), not legacy `markdownlint`
+      -- ruff: style, correctness, and complexity (pyright handles types separately)
+      python   = { 'ruff' },
+      -- markdownlint-cli2: prose linting (link validity, heading structure, etc.)
       markdown = { 'markdownlint-cli2' },
-      -- Add more linters as needed:
-      -- python = { 'pylint' },
-      -- javascript = { 'eslint' },
-      -- typescript = { 'eslint' },
-      -- json = { 'jsonlint' },
     }
 
-    -- To allow other plugins to add linters to require('lint').linters_by_ft,
-    -- instead set linters_by_ft like this:
-    -- lint.linters_by_ft = lint.linters_by_ft or {}
-    -- lint.linters_by_ft['markdown'] = { 'markdownlint' }
-    --
-    -- However, note that this will enable a set of default linters,
-    -- which will cause errors unless these tools are available:
-    -- {
-    --   clojure = { "clj-kondo" },
-    --   dockerfile = { "hadolint" },
-    --   inko = { "inko" },
-    --   janet = { "janet" },
-    --   json = { "jsonlint" },
-    --   markdown = { "vale" },
-    --   rst = { "vale" },
-    --   ruby = { "ruby" },
-    --   terraform = { "tflint" },
-    --   text = { "vale" }
-    -- }
-    --
-    -- You can disable the default linters by setting their filetypes to nil:
-    -- lint.linters_by_ft['clojure'] = nil
-    -- lint.linters_by_ft['dockerfile'] = nil
-    -- lint.linters_by_ft['inko'] = nil
-    -- lint.linters_by_ft['janet'] = nil
-    -- lint.linters_by_ft['json'] = nil
-    -- lint.linters_by_ft['markdown'] = nil
-    -- lint.linters_by_ft['rst'] = nil
-    -- lint.linters_by_ft['ruby'] = nil
-    -- lint.linters_by_ft['terraform'] = nil
-    -- lint.linters_by_ft['text'] = nil
-
-    -- Create autocommand which carries out the actual linting
-    -- on the specified events.
     local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
     vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
       group = lint_augroup,
       callback = function()
-        -- Only run the linter in buffers that you can modify in order to
-        -- avoid superfluous noise, notably within the handy LSP pop-ups that
-        -- describe the hovered symbol using Markdown.
+        -- Only lint modifiable buffers (skip LSP hover docs, help pages, etc.)
         if vim.bo.modifiable then
           lint.try_lint(nil, { ignore_errors = true })
         end
       end,
     })
   end,
-} 
+}

@@ -1,0 +1,14 @@
+Checks: >
+  -*,
+  bugprone-*,
+  modernize-*,
+  performance-*,
+  readability-braces-around-statements,
+  readability-else-after-return,
+  readability-const-return-type,
+  cppcoreguidelines-init-variables,
+  -bugprone-easily-swappable-parameters
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+SystemHeaders: false

@@ -17,6 +17,7 @@ local parsers = {
   'python',
   'query',
   'toml',
+  'tsx',
   'typescript',
   'vim',
   'vimdoc',

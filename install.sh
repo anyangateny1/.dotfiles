@@ -53,15 +53,9 @@ link "$DOTFILES_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
 echo "--- Alacritty ---"
 link "$DOTFILES_DIR/alacritty" "$HOME/.config/alacritty"
 
-# clangd (user-level defaults for C++ in any project)
-echo "--- clangd ---"
-if [ -f "$DOTFILES_DIR/.clangd" ]; then
-  link "$DOTFILES_DIR/.clangd" "$HOME/.clangd"
-fi
-
 echo ""
 echo "=== Symlinks created ==="
-echo "  bash, nvim, tmux, alacritty, clangd"
+echo "  bash, nvim, tmux, alacritty"
 
 # Offer to install Neovim plugin dependencies
 if [ -x "$DOTFILES_DIR/nvim/install-deps.sh" ]; then

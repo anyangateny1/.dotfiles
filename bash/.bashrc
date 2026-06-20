@@ -120,18 +120,27 @@ fi
 export EDITOR='nvim'
 export VISUAL='nvim'
 
-# fzf shell integration (path differs by distro / install method)
-for _fzf_bindings in \
+# fzf shell integration — key-bindings (Ctrl-R history, Ctrl-T files, Alt-C cd)
+# and completions (**<Tab> expansion for files, kill, ssh, etc.)
+for _fzf_script in \
   /usr/share/fzf/shell/key-bindings.bash \
   /usr/share/doc/fzf/examples/key-bindings.bash \
   "${HOME}/.fzf/shell/key-bindings.bash"; do
-  if [[ -f "${_fzf_bindings}" ]]; then
-    # shellcheck source=/dev/null
-    source "${_fzf_bindings}"
+  if [[ -f "${_fzf_script}" ]]; then
+    source "${_fzf_script}"
     break
   fi
 done
-unset _fzf_bindings
+for _fzf_script in \
+  /usr/share/fzf/shell/completion.bash \
+  /usr/share/doc/fzf/examples/completion.bash \
+  "${HOME}/.fzf/shell/completion.bash"; do
+  if [[ -f "${_fzf_script}" ]]; then
+    source "${_fzf_script}"
+    break
+  fi
+done
+unset _fzf_script
 # avoid duplicates..
 export HISTCONTROL=ignoredups:erasedups
 # append history entries:
