@@ -1,10 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-# Dotfiles installer — Bash, Neovim, Tmux, Alacritty, clangd
-# Works on home-pc and work_vim branches (same stack; work adds nvim overlay only).
-# See docs/dotfiles.md
-
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 link() {
@@ -49,19 +45,26 @@ link "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
 echo "--- Tmux ---"
 link "$DOTFILES_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
 
+# Git
+echo "--- Git ---"
+link "$DOTFILES_DIR/git/.gitconfig" "$HOME/.gitconfig"
+
 # Alacritty
 echo "--- Alacritty ---"
 link "$DOTFILES_DIR/alacritty" "$HOME/.config/alacritty"
 
-# clangd (user-level defaults for C++ in any project)
-echo "--- clangd ---"
+# C/C++ user-level defaults
+echo "--- C/C++ ---"
 if [ -f "$DOTFILES_DIR/.clangd" ]; then
   link "$DOTFILES_DIR/.clangd" "$HOME/.clangd"
+fi
+if [ -f "$DOTFILES_DIR/.clang-format" ]; then
+  link "$DOTFILES_DIR/.clang-format" "$HOME/.clang-format"
 fi
 
 echo ""
 echo "=== Symlinks created ==="
-echo "  bash, nvim, tmux, alacritty, clangd"
+echo "  bash, nvim, tmux, git, alacritty, clangd, clang-format"
 
 # Offer to install Neovim plugin dependencies
 if [ -x "$DOTFILES_DIR/nvim/install-deps.sh" ]; then

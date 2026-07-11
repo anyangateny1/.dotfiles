@@ -132,6 +132,11 @@ for _fzf_bindings in \
     break
   fi
 done
+
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+. /usr/share/bash-completion/bash_completion
+fi
+
 unset _fzf_bindings
 source /usr/share/doc/fzf/examples/key-bindings.bash
 # avoid duplicates..
@@ -141,6 +146,11 @@ shopt -s histappend
 # After each command, save and reload history:
 export PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
 bind "set completion-ignore-case on"
+
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

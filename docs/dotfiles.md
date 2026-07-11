@@ -13,13 +13,15 @@ The only branch difference is Neovim’s `work-env.lua` overlay on `work_vim`.
 | | `bash/.bash_completion/` | `~/.bash_completion/` |
 | **Neovim** | `nvim/` | `~/.config/nvim` |
 | **Tmux** | `tmux/tmux.conf` | `~/.tmux.conf` |
+| **Git** | `git/.gitconfig` | `~/.gitconfig` |
 | **Alacritty** | `alacritty/` | `~/.config/alacritty` |
 | **clangd** | `.clangd` | `~/.clangd` |
+| **clang-format** | `.clang-format` | `~/.clang-format` |
 
 ## Branches
 
 ```
-home-pc   ──►  bash, tmux, alacritty, nvim, .clangd, install.sh
+home-pc   ──►  bash, tmux, git, alacritty, nvim, .clangd, .clang-format, install.sh, uninstall.sh
                   │
 work_vim  ──►  same + nvim/lua/custom/plugins/work-env.lua
 ```
@@ -38,6 +40,7 @@ git clone <repo> ~/.dotfiles   # or your path
 cd ~/.dotfiles
 git checkout home-pc          # or work_vim on work machine
 ./install.sh
+./uninstall.sh
 ```
 
 ## Bash (`bash/.bashrc`)
@@ -76,10 +79,19 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 Optional themes (not in repo): clone [alacritty-theme](https://github.com/alacritty/alacritty-theme) to `alacritty/themes/` (gitignored).
 
+## Git (`git/.gitconfig`)
+
+Shared Git defaults, aliases, editor, and rebase behavior installed to `~/.gitconfig`.
+
 ## clangd (`.clangd`)
 
-Shared C++ LSP tweaks: strips noisy compile flags, suppresses diagnostics under `build/` and `subprojects/`.
+Shared C++ LSP tweaks: defaults C++ files and headers to C++23, strips noisy compile flags, and suppresses diagnostics under `build/` and `subprojects/`.
 Used by Neovim’s clangd on any machine with this dotfiles install.
+
+## clang-format (`.clang-format`)
+
+Shared C++ formatting defaults: LLVM base style and automatic include sorting/grouping.
+Project-local `.clang-format` files override this home-level default.
 
 ## Neovim
 

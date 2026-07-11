@@ -32,10 +32,10 @@ Find the Mason package name with `:Mason` and match the executable in `cmd`.
 | File | Mason package | Languages |
 |------|---------------|-----------|
 | `clangd.lua` | `clangd` | C, C++ |
-| `gopls.lua` | `gopls` | Go |
 | `pyright.lua` | `pyright` | Python |
-| `ts_ls.lua` | `typescript-language-server` | JS, TS, React |
-| `eslint.lua` | `eslint-lsp` | JS/TS (when eslint config exists) |
+| `markdown_oxide.lua` | `markdown-oxide` | Markdown |
+| `jsonls.lua` | `json-lsp` | JSON, JSONC |
+| `lua_ls.lua` | `lua-language-server` | Lua |
 
 ## Mason package vs LSP name
 
@@ -43,9 +43,9 @@ They are not always the same:
 
 | Mason | `lsp/` filename | `cmd` binary |
 |-------|-----------------|--------------|
-| `typescript-language-server` | `ts_ls.lua` | `typescript-language-server` |
 | `lua-language-server` | `lua_ls.lua` | `lua-language-server` |
 | `pyright` | `pyright.lua` | `pyright-langserver` |
+| `json-lsp` | `jsonls.lua` | `vscode-json-language-server` |
 
 Use `:Mason` → package → “Instructions” for the exact command.
 

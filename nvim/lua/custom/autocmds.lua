@@ -9,6 +9,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- Trim trailing whitespace before save (toggle with vim.g.trim_whitespace)
 vim.api.nvim_create_autocmd('BufWritePre', {
   group = vim.api.nvim_create_augroup('trim-whitespace', { clear = true }),
   callback = function()

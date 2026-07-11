@@ -15,6 +15,14 @@ CompileFlags:
 
 ---
 If:
+  PathMatch: '.*\.(C|cc|cpp|cxx|c\+\+|h|hh|hpp|hxx|h\+\+|ipp|ixx|cppm)$'
+CompileFlags:
+  Compiler: clang++
+  Add:
+    - -std=c++23
+
+---
+If:
   PathMatch:
     - build/.*
     - subprojects/.*

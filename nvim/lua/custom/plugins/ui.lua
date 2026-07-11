@@ -4,7 +4,15 @@ return {
     'folke/todo-comments.nvim',
     event = 'VimEnter',
     dependencies = { 'nvim-lua/plenary.nvim' },
-    opts = { signs = false },
+    opts = {
+      signs = false,
+      highlight = {
+        pattern = [[.*<(KEYWORDS)\s*%(\([^)]*\))?\s*:]],
+      },
+      search = {
+        pattern = [[\b(KEYWORDS)\s*(\([^)]*\))?\s*:]],
+      },
+    },
   },
 
   -- Mini plugins collection (mini.statusline; LSP progress also via fidget.nvim)

@@ -1,0 +1,32 @@
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+[user]
+	email = aateny@micro-x.com
+	name = Anyang Ateny
+[push]
+	autoSetupRemote = true
+[alias]
+	# A useful output showing your branch relative to other branches.
+	lag = log --all --graph --oneline --decorate
+	# A useful output showing your branch
+	lg = log --graph --oneline --decorate
+	# Amend the current tip, useful with `git add -p` or similar.
+	cane = commit --amend --no-edit
+	# WIP commit
+	wip = "!git commit -m '[WIP]'"
+	# Diff view open only staged
+	dv = "!nvim -c 'DiffviewOpen -uno'"
+	up = "!git remote update -p; git merge --ff-only @{u}"
+
+[core]
+	editor = nvim
+
+[rebase]
+	missingCommitsCheck = error
+	autoSquash = true
+	autoStash = true
+
+[status]

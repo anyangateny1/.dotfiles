@@ -10,6 +10,7 @@ return {
     'jay-babu/mason-nvim-dap.nvim',
     'leoluz/nvim-dap-go',
     'mfussenegger/nvim-dap-python',
+    'theHamsta/nvim-dap-virtual-text',
   },
   keys = {
     {
@@ -113,15 +114,50 @@ return {
     -- Per-project configs: .vscode/launch.json (auto-loaded by nvim-dap).
     -- Template: ~/.config/nvim/launch.json.example
 
+    local function pick_executable()
+      local uv = vim.uv or vim.loop
+      local cwd = vim.fn.getcwd()
+      local build_dir = vim.fs.joinpath(cwd, 'build')
+      local candidates = {}
+
+      if uv.fs_stat(build_dir) then
+        candidates = vim.fs.find(function(name, path)
+          if name:match '%.so$' or name:match '%.a$' or name:match '%.o$' then
+            return false
+          end
+
+          local full_path = vim.fs.joinpath(path, name)
+          return vim.fn.executable(full_path) == 1
+        end, {
+          path = build_dir,
+          limit = 20,
+          type = 'file',
+        })
+      end
+
+      local default = candidates[1] or build_dir .. '/'
+      return vim.fn.input('Path to executable: ', default, 'file')
+    end
+
+    local mason_packages = vim.fn.stdpath 'data' .. '/mason/packages'
+    require('dap-python').setup(mason_packages .. '/debugpy/venv/bin/python')
+
+    require('nvim-dap-virtual-text').setup {
+      commented = true,
+    }
+
     dap.configurations.cpp = {
       {
-        name = 'Launch',
+        name = 'Launch executable',
         type = 'codelldb',
         request = 'launch',
-        program = get_default_executable,
+        program = pick_executable,
         cwd = '${workspaceFolder}',
         stopOnEntry = false,
-        args = { '--simulate', '-c /root/Micro-X/tomo-system-centre/example_scan_config.json' },
+        args = function()
+          local args = vim.fn.input 'Arguments: '
+          return vim.split(args, ' ', { trimempty = true })
+        end,
       },
       {
         name = 'Attach to process',
@@ -155,8 +191,6 @@ return {
     }
 
     require('dap.ext.vscode').load_launchjs(nil, { codelldb = { 'c', 'cpp' } })
-
-    require('debugpy').setup() {}
 
     -- Install golang specific config
     require('dap-go').setup {

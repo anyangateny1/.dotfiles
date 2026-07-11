@@ -1,195 +1,122 @@
 # Neovim setup guide
 
-Part of the **full dotfiles** repo (`bash/`, `tmux/`, `alacritty/`, `nvim/`, `.clangd`).
-Both `home-pc` and `work_vim` branches install all of them via `./install.sh` at the repo root.
-
-Stack overview: [../../docs/dotfiles.md](../../docs/dotfiles.md)
-
-Shell `fzf` key bindings live in `bash/.bashrc` (Fedora path fixed).
-
----
+Part of the full dotfiles repo. `work_vim` keeps the cleaner `home-pc` Neovim structure, with the default toolchain centered on Python, C/C++, Markdown, plus Lua and JSON for maintaining the config itself.
 
 ## Quick reference
 
 ### LSP & languages
 
-| Language | LSP file | Mason package | Format on save |
-|----------|----------|---------------|----------------|
-| C/C++ | `lsp/clangd.lua` | `clangd` | `clang-format` (if style file exists) |
-| Go | `lsp/gopls.lua` | `gopls` | `gofumpt`, `goimports` |
-| Python | `lsp/pyright.lua` | `pyright` | `ruff` |
-| JS/TS/React | `lsp/ts_ls.lua`, `lsp/eslint.lua` | `typescript-language-server`, `eslint-lsp` | `eslint_d`, `prettier` |
+| Language | LSP file | Mason package | Format / lint |
+|----------|----------|---------------|---------------|
+| C/C++ | `lsp/clangd.lua` | `clangd` | `clang-format`, `clang-tidy` via `clangd` |
+| Python | `lsp/pyright.lua` | `pyright` | Ruff for lint/imports/fix/format |
+| Markdown | `lsp/markdown_oxide.lua` | `markdown-oxide` | `markdownlint-cli2` |
+| JSON | `lsp/jsonls.lua` | `json-lsp` | LSP only |
 | Lua | `lsp/lua_ls.lua` | `lua-language-server` | `stylua` |
 
-**Add a new language:** see [lsp.md](./lsp.md) — create `lsp/<name>.lua`, `:MasonInstall …`, `:restart`.
+Add a new language by creating `lsp/<name>.lua` and adding the Mason package to `lua/custom/plugins/lsp.lua`.
 
-### Debugging
+### Tool config files
 
-| Key | Action |
-|-----|--------|
-| `<F5>` | Start / continue |
-| `<F1>` | Step into |
-| `<F2>` | Step over |
-| `<F3>` | Step out |
-| `<F7>` | Toggle DAP UI |
-| `<leader>b` | Toggle breakpoint |
-| `<leader>B` | Conditional breakpoint |
-| `<leader>dd` | Pick launch configuration |
+Put config in the tool's own project files. Neovim does not pass config paths for these tools.
 
-**Per-project config:** copy `~/.config/nvim/launch.json.example` → `.vscode/launch.json` and edit paths/args.
+| Tool | Where to put config |
+|------|---------------------|
+| Ruff | `pyproject.toml`, `ruff.toml`, `.ruff.toml` |
+| Pyright | `pyrightconfig.json` |
+| clangd | `.clangd`, `compile_commands.json`, `~/.clangd`, or user config at `~/.config/clangd/config.yaml` |
+| clang-format | `.clang-format`, `_clang-format`, `clang-format.yaml`, or `~/.clang-format` |
+| clang-tidy | `.clang-tidy` |
+| markdownlint-cli2 | `.markdownlint-cli2.jsonc`, `.markdownlint-cli2.yaml`, `.markdownlint-cli2.yml`, `.markdownlint-cli2.cjs` |
+| markdown-oxide | `.markdownoxide.toml` or `.obsidian` root |
 
-Full guide: [debugging.md](./debugging.md).
+`clangd` is started with `--enable-config` and `--clang-tidy`. The dotfiles install adds `~/.clangd`, which defaults C++ files and headers to C++23 when a project does not override it. It still uses `compile_commands.json` when available by walking upward from the source file. If a project uses a separate build directory, keep `compile_commands.json` where clangd can find it, or add the compile command location to `.clangd`.
 
-### Spellcheck
+The dotfiles install also adds `~/.clang-format`, so format-on-save and `<leader>f` can sort and group includes even when a project has no local style file. A project-local style file wins when present.
 
-| What | How |
-|------|-----|
-| Auto on | `markdown`, `text`, `gitcommit`, `gitrebase` buffers |
-| Toggle any buffer | `<leader>ts` |
+`--clang-tidy` means clangd runs clang-tidy checks inside LSP diagnostics. The standalone `clang-tidy` CLI is still separate, and `clang-format` is the tool that formats code and sorts includes.
 
-Spell is **off** in code buffers by default (no more red squiggles in C++).
+### Ruff and Pylint rules
 
-### Completion
+Ruff is the editor linter. It can enable Pylint-derived rules with the `PL` prefix, but this is not exact full Pylint parity. Use full Pylint separately in a project or CI only when you need Pylint-specific behavior.
 
-| Key (insert mode) | Action |
-|-------------------|--------|
-| `<C-Space>` | Trigger completion |
-| `<C-n>` / `<C-p>` | Next / previous item |
-| `<C-y>` | Confirm selection |
-| `<C-l>` | Jump to next LSP snippet placeholder (when applicable) |
-| `<C-h>` | Jump to previous LSP snippet placeholder |
-| `<C-b>` / `<C-f>` | Scroll completion docs |
+Example `ruff.toml`:
 
-**Autopairs:** closing `)`, `}`, `"` is inserted when you confirm a completion item that includes an opening pair.
+```toml
+line-length = 120
 
-LuaSnip remains for **LSP snippet expansion** only (e.g. function stubs from clangd), not a prebuilt snippet library.
+[lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "PL"]
+ignore = []
 
-### Shell (bash) — fzf
+[format]
+quote-style = "single"
+indent-style = "space"
+```
 
-After opening a new terminal, these work if `fzf` is installed:
+Equivalent `pyproject.toml`:
 
-| Key | Action |
-|-----|--------|
-| `Ctrl-T` | Fuzzy-find files (insert path) |
-| `Ctrl-R` | Fuzzy-search command history |
-| `Alt-C` | Fuzzy-find directories (`cd`) |
+```toml
+[tool.ruff]
+line-length = 120
 
-Fedora installs bindings at `/usr/share/fzf/shell/key-bindings.bash` (now sourced automatically from `.bashrc`).
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "PL"]
+ignore = []
 
----
-
-## Files added or changed
-
-### New LSP configs
-
-- `lsp/pyright.lua` — Python language server
-- `lsp/gopls.lua` — Go language server
-
-### New docs
-
-| File | Purpose |
-|------|---------|
-| [lsp.md](./lsp.md) | How to add any LSP server |
-| [debugging.md](./debugging.md) | `launch.json`, DAP, troubleshooting |
-| This file | Overview and keymaps |
-
-### Templates
-
-- `launch.json.example` — copy into your repo as `.vscode/launch.json`
-
-### Config changes
-
-| File | Change |
-|------|--------|
-| `lua/custom/options.lua` | Global spell removed |
-| `lua/custom/autocmds.lua` | Spell on for prose filetypes |
-| `lua/custom/keymaps.lua` | `<leader>ts` spell toggle |
-| `lua/custom/plugins/lsp.lua` | Mason: `gopls`, `gofumpt`, `goimports` |
-| `lua/custom/plugins/formatting.lua` | Go formatters |
-| `lua/custom/plugins/completion.lua` | cmp + autopairs |
-| `lua/custom/plugins/debug.lua` | Project `launch.json` only (no hardcoded paths) |
-| `bash/.bashrc` | fzf key-bindings path fix for Fedora |
-
----
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+```
 
 ## First-time setup after pull
 
 ```bash
-# 1. Reload shell (fzf bindings)
 source ~/.bashrc
-
-# 2. Open Neovim and sync plugins
 nvim
 :Lazy sync
-
-# 3. Install tools (if Mason did not auto-install)
-:MasonInstall gopls gofumpt goimports pyright codelldb delve debugpy
-
-# 4. Restart
+:MasonInstall clangd pyright markdown-oxide json-lsp stylua clang-format ruff markdownlint-cli2
 :restart
 ```
-
----
 
 ## Common workflows
 
 ### C++ project
 
-1. Generate `compile_commands.json` (CMake: `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`).
-2. Open project; clangd attaches automatically.
-3. `<leader>ch` — switch header/source (clangd).
-4. `<leader>f` — format (only if `.clang-format` or `clang-format.yaml` exists).
-5. Debug: copy `launch.json.example` → `.vscode/launch.json`, set `program` to your binary, `<F5>`.
+1. Generate `compile_commands.json` when your build system supports it.
+2. Add project `.clang-format` only when you need to override the home default.
+3. Add `.clang-tidy` for diagnostics policy when the project needs one.
+4. Use `<leader>ch` to switch header/source.
+5. Use `<leader>f` to format and sort includes.
 
-### Go project
+### Python project
 
-1. Open folder with `go.mod`.
-2. `gopls` provides navigation, rename, diagnostics.
-3. Format on save via `gofumpt` + `goimports`.
-4. Debug: use `"type": "go"` entry in `launch.json`.
+1. Put Ruff config in `pyproject.toml`, `ruff.toml`, or `.ruff.toml`.
+2. Enable `PL` in Ruff if you want Pylint-derived rules.
+3. `pyright` handles types; Ruff handles lint diagnostics and `<leader>f` runs Ruff import/fix/format.
 
-### Web (JS/TS)
+### Markdown project
 
-1. Open folder with `package.json` / `tsconfig.json`.
-2. `ts_ls` + `eslint` (when eslint config exists).
-3. `<leader>f` — eslint_d + prettier.
+1. Put markdownlint rules in a supported markdownlint config file.
+2. Add `.markdownoxide.toml` to opt a notes root into `markdown-oxide` outside Obsidian vaults.
+3. Markdown text width and spell defaults are set in `lua/custom/autocmds.lua`.
 
-### Random / new language
+## Files to know
 
-1. Read [lsp.md](./lsp.md).
-2. Create `lsp/<server>.lua`.
-3. `:MasonInstall <package>`.
-4. `:restart`.
-
-Optional: add Treesitter parser in `lua/custom/plugins/tree-sitter.lua`, run `:TSInstall <parser>`.
-
----
-
-## Related built-in / existing features (unchanged)
-
-These were already in your config; listed here so this doc is self-contained.
-
-| Area | Keys / commands |
-|------|-----------------|
-| File tree | `<leader>e`, `\` |
-| Telescope | `<leader>sf` files, `<leader>sg` grep, `<leader>/` buffer fuzzy |
-| LSP (Lspsaga) | `gd` definition, `K` hover, `gr` refs, `<leader>ca` actions |
-| Git | gitsigns `<leader>h*`, fugitive, diffview |
-| Harpoon | `<leader>ha` add, `<leader>hh` menu, `<leader>1`–`4` jump |
-| Format | `<leader>f` |
-| Trouble diagnostics | `<leader>xx` |
-
----
+| File | Purpose |
+|------|---------|
+| `lua/custom/plugins/lsp.lua` | Extensible Mason + LSP auto-discovery core |
+| `lua/custom/plugins/formatting.lua` | Ruff + clang-format wiring |
+| `lua/custom/plugins/lint.lua` | Ruff + markdownlint wiring |
+| `lua/custom/autocmds.lua` | Markdown/text editor defaults |
+| `lua/custom/plugins/work-env.lua` | Work-machine-only overlay |
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
-| `fzf key-bindings.bash: No such file` | Pull latest `.bashrc`; `source ~/.bashrc` |
 | Python has no LSP | `:MasonInstall pyright`, check `lsp/pyright.lua` exists |
-| Go has no LSP | `:MasonInstall gopls` |
-| Debug: no configs | Add `.vscode/launch.json` in project root |
-| LSP snippets (placeholders) | Use `<C-l>` / `<C-h>` after confirming an LSP snippet item |
-| Mason package missing | `:Mason` → install → `:restart` |
-
-More detail: [debugging.md](./debugging.md), [lsp.md](./lsp.md).
+| Ruff rules are too light | Add `select = ["E", "F", "I", "PL"]` or a broader list in Ruff config |
+| Markdown lint config not found | Add a markdownlint-cli2 config file at the project root |
+| Markdown LSP does not attach | Add `.markdownoxide.toml` or use an `.obsidian` root |
+| C/C++ format is skipped | Run `./install.sh` so `~/.clang-format` exists, or add a project `.clang-format` |
