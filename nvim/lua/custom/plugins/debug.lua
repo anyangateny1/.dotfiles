@@ -69,6 +69,15 @@ return {
       end,
       desc = 'Debug: Pick launch config',
     },
+    {
+      '<leader>dq',
+      function()
+        require('dap').disconnect { terminateDebuggee = true }
+        require('dap').close()
+        require('dapui').close()
+      end,
+      desc = 'Debug: Close Debug',
+    },
   },
   config = function()
     local dap = require 'dap'

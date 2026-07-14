@@ -23,6 +23,7 @@
 
 [core]
 	editor = nvim
+	pager = less -FX
 
 [rebase]
 	missingCommitsCheck = error

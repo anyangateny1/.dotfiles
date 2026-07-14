@@ -36,8 +36,6 @@ return {
         F12 = '<F12>',
       },
     },
-    -- Only define GROUPS here. Individual key descriptions are picked up
-    -- automatically from the `desc` field on vim.keymap.set() calls.
     spec = {
       { '<leader>c', group = '[C]ode' },
       { '<leader>d', group = '[D]ocument' },

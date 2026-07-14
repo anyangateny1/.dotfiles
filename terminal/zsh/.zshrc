@@ -71,6 +71,8 @@ alias tb="nc termbin.com 9999"
 alias cleanup="cleanup_orphans"
 alias jctl="journalctl -p 3 -xb"
 alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl"
+alias git="nocorrect git"
+alias vim="nvim"
 
 cleanup_orphans() {
   local orphans
@@ -88,5 +90,6 @@ cleanup_orphans() {
 [[ ! -r "$HOME/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
 
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+export PLANTUML_JAR_PATH=/usr/share/java/plantuml/plantuml.jar
 
 unfunction _dotfiles_source 2>/dev/null || true
