@@ -21,7 +21,7 @@ elif command -v dnf &>/dev/null; then
   UPDATE="sudo dnf check-update || true"
 elif command -v pacman &>/dev/null; then
   PKG_MGR="pacman"
-  INSTALL="sudo pacman -S --noconfirm"
+  INSTALL="sudo pacman -S --needed --noconfirm"
   UPDATE="sudo pacman -Sy"
 elif command -v brew &>/dev/null; then
   PKG_MGR="brew"
@@ -86,8 +86,12 @@ echo "--- Treesitter dependencies ---"
 if command -v cc &>/dev/null || command -v gcc &>/dev/null; then
   echo "  [ok] C compiler"
 else
-  echo "  [..] Installing gcc (needed to compile treesitter parsers)..."
-  $INSTALL gcc 2>/dev/null || echo "  [!!] Failed to install gcc"
+  echo "  [..] Installing C compiler (needed to compile treesitter parsers)..."
+  if [ "$PKG_MGR" = "pacman" ]; then
+    $INSTALL base-devel 2>/dev/null || echo "  [!!] Failed to install base-devel"
+  else
+    $INSTALL gcc 2>/dev/null || echo "  [!!] Failed to install gcc"
+  fi
 fi
 
 # tree-sitter CLI: required by nvim-treesitter (main branch) to build parsers
