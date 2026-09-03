@@ -45,6 +45,9 @@ return {
           'pyright',
           'markdown-oxide',
           'json-lsp',
+          'biome',
+          'bash-language-server',
+          'yaml-language-server',
 
           -- Formatters  (see formatting.lua)
           'stylua',

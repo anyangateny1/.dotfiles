@@ -1,7 +1,7 @@
 local clang_style_files = { '.clang-format', '_clang-format', 'clang-format.yaml' }
 
 local function home_clang_style()
-  local path = vim.fs.normalize(vim.fn.expand('~/.clang-format'))
+  local path = vim.fs.normalize(vim.fn.expand '~/.clang-format')
   return vim.fn.filereadable(path) == 1 and path or nil
 end
 

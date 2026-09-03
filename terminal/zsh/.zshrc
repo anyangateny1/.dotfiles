@@ -92,4 +92,6 @@ cleanup_orphans() {
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 export PLANTUML_JAR_PATH=/usr/share/java/plantuml/plantuml.jar
 
+setopt INTERACTIVE_COMMENTS
+
 unfunction _dotfiles_source 2>/dev/null || true
